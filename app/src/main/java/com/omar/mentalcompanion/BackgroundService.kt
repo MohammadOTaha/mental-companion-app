@@ -1,6 +1,5 @@
 package com.omar.mentalcompanion
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
@@ -17,7 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class LocationService: Service() {
+class BackgroundService: Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
@@ -61,7 +60,6 @@ class LocationService: Service() {
                 val updatedNotification = notification.setContentText(
                     "Location: ($lat, $long)"
                 )
-                println("Location: ($lat, $long)")
                 notificationManager.notify(1, updatedNotification.build())
             }
             .launchIn(serviceScope)
@@ -70,7 +68,10 @@ class LocationService: Service() {
     }
 
     private fun stop() {
-        stopForeground(true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        }
+
         stopSelf()
     }
 

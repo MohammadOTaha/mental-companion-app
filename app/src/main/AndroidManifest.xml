@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MentalCompanionCompose"
         tools:targetApi="31">
-        <service android:name=".LocationService" android:foregroundServiceType="location" />
+        <service android:name=".BackgroundService" android:foregroundServiceType="location" />
 
 
         <activity

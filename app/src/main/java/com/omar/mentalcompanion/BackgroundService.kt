@@ -28,7 +28,7 @@ class BackgroundService: Service() {
     override fun onCreate() {
         super.onCreate()
 
-        locationClient = DefaultLocationClient(
+        locationClient = LocationClient(
             applicationContext,
             LocationServices.getFusedLocationProviderClient(applicationContext)
         )
@@ -39,6 +39,7 @@ class BackgroundService: Service() {
             ACTION_START -> start()
             ACTION_STOP -> stop()
         }
+
         return super.onStartCommand(intent, flags, startId)
     }
 

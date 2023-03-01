@@ -1,13 +1,11 @@
-package com.omar.mentalcompanion
+package com.omar.mentalcompanion.services
 
-import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
+import com.omar.mentalcompanion.LocationClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,6 +18,7 @@ class BackgroundService: Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
+    private lateinit var notificationService: NotificationService
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -27,6 +26,8 @@ class BackgroundService: Service() {
 
     override fun onCreate() {
         super.onCreate()
+
+        notificationService = NotificationService(this)
 
         locationClient = LocationClient(
             applicationContext,
@@ -44,13 +45,7 @@ class BackgroundService: Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "location")
-            .setContentTitle("Tracking location...")
-            .setContentText("Location: null")
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setOngoing(true)
-
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notification = notificationService.getNotification()
 
         locationClient
             .getLocationUpdates(10000L)
@@ -61,7 +56,7 @@ class BackgroundService: Service() {
                 val updatedNotification = notification.setContentText(
                     "Location: ($lat, $long)"
                 )
-                notificationManager.notify(1, updatedNotification.build())
+                notificationService.notificationManager.notify(1, updatedNotification.build())
             }
             .launchIn(serviceScope)
 
@@ -83,6 +78,7 @@ class BackgroundService: Service() {
 
     companion object {
         const val ACTION_START = "ACTION_START"
+        const val ACTION_START_WITH_NOTIFICATION = "ACTION_START_WITH_NOTIFICATION"
         const val ACTION_STOP = "ACTION_STOP"
     }
 }

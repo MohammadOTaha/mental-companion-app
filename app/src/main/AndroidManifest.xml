@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MentalCompanionCompose"
         tools:targetApi="31">
-        <service android:name=".BackgroundService" android:foregroundServiceType="location" />
+        <service android:name=".services.BackgroundService" android:foregroundServiceType="location" />
 
 
         <activity

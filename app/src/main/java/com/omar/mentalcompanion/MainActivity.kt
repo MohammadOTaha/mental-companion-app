@@ -1,8 +1,6 @@
 package com.omar.mentalcompanion
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -23,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
+import com.omar.mentalcompanion.services.BackgroundService
 import com.omar.mentalcompanion.ui.theme.MentalCompanionTheme
 
 class MainActivity : ComponentActivity() {
@@ -140,7 +139,6 @@ class MainActivity : ComponentActivity() {
 
     private fun initApp() {
         requestPermissions()
-        buildNotificationChannel()
     }
 
     private fun requestPermissions() {
@@ -153,17 +151,5 @@ class MainActivity : ComponentActivity() {
         }
 
         ActivityCompat.requestPermissions(this, permissionsList.toTypedArray(), 0)
-    }
-
-    private fun buildNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "location",
-                "Location",
-                NotificationManager.IMPORTANCE_LOW
-            )
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
     }
 }

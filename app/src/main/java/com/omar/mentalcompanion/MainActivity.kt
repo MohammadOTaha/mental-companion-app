@@ -1,11 +1,15 @@
 package com.omar.mentalcompanion
 
 import android.Manifest
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,13 +28,30 @@ import com.google.android.gms.location.LocationServices
 import com.omar.mentalcompanion.services.BackgroundService
 import com.omar.mentalcompanion.ui.theme.MentalCompanionTheme
 
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var locationClient: LocationClient
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initApp()
+
+        // check if user has granted permission to access usage stats
+        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val time = System.currentTimeMillis()
+        val stats: List<UsageStats> = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time)
+        if (stats.isEmpty()) {
+            startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
+        }
+
+        var appUsages: String = "";
+        for (stat in stats) {
+            if (stat.totalTimeInForeground > 0) {
+                appUsages += "${stat.packageName} : ${stat.totalTimeInForeground} ms --- ${stat.lastTimeUsed}\n\n"
+            }
+        }
 
         locationClient = LocationClient(
             applicationContext,
@@ -44,6 +65,7 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(
                         listOf(
                             "Location" to "...",
+                            "App Usages" to appUsages
                         )
                     )
                 }
@@ -52,7 +74,7 @@ class MainActivity : ComponentActivity() {
                     locationLiveData.observe(this@MainActivity) { location ->
                         locationData = listOf(
                             "Location" to location.latitude.toString() + ", " + location.longitude.toString(),
-                            "..." to ""
+                            "App Usages" to appUsages
                         )
                     }
                 }

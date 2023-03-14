@@ -19,14 +19,16 @@ data class AppUsage(val packageName: String, val usageTime: Long) : Comparable<A
     }
 }
 
-class UsageStatsService(private val context: Context) {
-    private val usageStatsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-        context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-    } else {
-        context.getSystemService("usagestats") as UsageStatsManager
-    }
+class UsageStatsService(context: Context) {
+    private val usageStatsManager: UsageStatsManager
 
-    fun init() {
+    init {
+        usageStatsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        } else {
+            context.getSystemService("usagestats") as UsageStatsManager
+        }
+
         if (usageStatsManager.queryUsageStats(
                 UsageStatsManager.INTERVAL_DAILY,
                 System.currentTimeMillis() - ONE_DAY_MILLIS,

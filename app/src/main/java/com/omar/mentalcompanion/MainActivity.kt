@@ -167,8 +167,7 @@ class MainActivity : ComponentActivity() {
             LocationServices.getFusedLocationProviderClient(applicationContext)
         )
 
-        usageStatsService = UsageStatsService(applicationContext)
-        usageStatsService.init()
+        usageStatsService = UsageStatsService(this)
     }
 
     private fun requestPermissions() {

@@ -1,15 +1,11 @@
 package com.omar.mentalcompanion
 
 import android.Manifest
-import android.app.usage.UsageStats
-import android.app.usage.UsageStatsManager
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,56 +22,37 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
 import com.omar.mentalcompanion.services.BackgroundService
+import com.omar.mentalcompanion.services.UsageStatsService
 import com.omar.mentalcompanion.ui.theme.MentalCompanionTheme
-
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var locationClient: LocationClient
+    private lateinit var usageStatsService: UsageStatsService
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initApp()
 
-        // check if user has granted permission to access usage stats
-        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val time = System.currentTimeMillis()
-        val stats: List<UsageStats> = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time)
-        if (stats.isEmpty()) {
-            startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
-        }
-
-        var appUsages: String = "";
-        for (stat in stats) {
-            if (stat.totalTimeInForeground > 0) {
-                appUsages += "${stat.packageName} : ${stat.totalTimeInForeground} ms --- ${stat.lastTimeUsed}\n\n"
-            }
-        }
-
-        locationClient = LocationClient(
-            applicationContext,
-            LocationServices.getFusedLocationProviderClient(applicationContext)
-        )
+        this.init()
 
         setContent {
             MentalCompanionTheme {
                 val locationLiveData = locationClient.getLocationLiveData(5000L)
-                var locationData by remember {
+                usageStatsService = remember { UsageStatsService(this) }
+
+                var trackedData by remember {
                     mutableStateOf(
-                        listOf(
+                        mapOf(
                             "Location" to "...",
-                            "App Usages" to appUsages
+                            "App Usages" to usageStatsService.getAppUsages(),
+                            "Screen Time" to usageStatsService.getTotalScreenTime()
                         )
                     )
                 }
 
-                LaunchedEffect(locationLiveData) {
-                    locationLiveData.observe(this@MainActivity) { location ->
-                        locationData = listOf(
-                            "Location" to location.latitude.toString() + ", " + location.longitude.toString(),
-                            "App Usages" to appUsages
-                        )
+                locationLiveData.observe(this) {
+                    trackedData = trackedData.toMutableMap().apply {
+                        this["Location"] = "${it.latitude}, ${it.longitude}"
                     }
                 }
 
@@ -112,8 +89,22 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         TableScreen(
-                            data = locationData
+                            data = trackedData
                         )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Button(onClick = {
+                                trackedData = trackedData.toMutableMap().apply {
+                                    this["App Usages"] = usageStatsService.getAppUsages()
+                                    this["Screen Time"] = usageStatsService.getTotalScreenTime()
+                                }
+                            }) {
+                                Text(text = "Refresh")
+                            }
+                        }
                     }
                 }
             }
@@ -121,13 +112,22 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun TableScreen(data: List<Pair<String, String>>) {
+    fun TableScreen(data: Map<String, Any>) {
         LazyColumn(
             modifier = Modifier.padding(PaddingValues(horizontal = 12.dp)),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(data.size) { index ->
-                CollectedDataItem(name = data[index].first, value = data[index].second)
+            data.forEach { (name, value) ->
+                item {
+                    CollectedDataItem(
+                        name = name,
+                        value = value.toString()
+                    )
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -159,8 +159,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun initApp() {
+    private fun init() {
         requestPermissions()
+
+        locationClient = LocationClient(
+            applicationContext,
+            LocationServices.getFusedLocationProviderClient(applicationContext)
+        )
+
+        usageStatsService = UsageStatsService(applicationContext)
+        usageStatsService.init()
     }
 
     private fun requestPermissions() {

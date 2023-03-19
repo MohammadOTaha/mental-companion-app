@@ -1,25 +1,12 @@
-package com.omar.mentalcompanion.services
+package com.omar.mentalcompanion.trackeddata
 
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.omar.mentalcompanion.dto.AppUsage
 
-data class AppUsage(val packageName: String, val usageTime: Long) : Comparable<AppUsage> {
-    override fun toString(): String {
-        val hours = usageTime / 3600
-        val minutes = (usageTime % 3600) / 60
-        val seconds = usageTime % 60
-
-        return "$packageName: $hours hours, $minutes minutes, $seconds seconds"
-    }
-
-    override fun compareTo(other: AppUsage): Int {
-        return other.usageTime.compareTo(this.usageTime)
-    }
-}
-
-class UsageStatsService(context: Context) {
+class UsageStatsData(context: Context) {
     private val usageStatsManager: UsageStatsManager
 
     init {

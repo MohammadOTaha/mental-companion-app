@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.ui.collecteddata
+package com.omar.mentalcompanion.presentation.collected_data
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

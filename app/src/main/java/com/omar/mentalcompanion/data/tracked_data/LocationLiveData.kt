@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.trackeddata
+package com.omar.mentalcompanion.data.tracked_data
 
 import android.Manifest
 import android.content.Context
@@ -8,7 +8,7 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import com.google.android.gms.location.*
-import com.omar.mentalcompanion.dto.LocationDetails
+import com.omar.mentalcompanion.data.dto.LocationDetails
 
 class LocationLiveData(var context: Context) : LiveData<LocationDetails>() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)

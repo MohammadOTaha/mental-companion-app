@@ -1,14 +1,11 @@
-package com.omar.mentalcompanion
+package com.omar.mentalcompanion.presentation
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -17,10 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.omar.mentalcompanion.AppViewModel
 import com.omar.mentalcompanion.services.BackgroundService
-import com.omar.mentalcompanion.ui.collecteddata.CollectedDataList
-import com.omar.mentalcompanion.ui.theme.MentalCompanionTheme
+import com.omar.mentalcompanion.presentation.collected_data.CollectedDataList
+import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -72,31 +69,6 @@ class MainActivity : ComponentActivity() {
     private fun init() {
         requestPermissions()
 
-        prepLocationUpdates()
-    }
-
-    private fun prepLocationUpdates() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            requestLocationUpdates()
-        } else {
-            requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    }
-
-    private val requestSinglePermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                requestLocationUpdates()
-            } else {
-                Toast.makeText(this, "GPS Unavailable", Toast.LENGTH_LONG).show()
-            }
-        }
-
-    private fun requestLocationUpdates() {
         applicationViewModel.startLocationUpdates()
     }
 

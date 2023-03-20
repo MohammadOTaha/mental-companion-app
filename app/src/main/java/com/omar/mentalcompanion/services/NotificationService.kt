@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.omar.mentalcompanion.MainActivity
+import com.omar.mentalcompanion.presentation.MainActivity
 
 class NotificationService(private val context: Context) {
     val notificationManager =

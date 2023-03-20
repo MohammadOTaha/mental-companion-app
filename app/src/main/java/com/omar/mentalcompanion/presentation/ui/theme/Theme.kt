@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.ui.theme
+package com.omar.mentalcompanion.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

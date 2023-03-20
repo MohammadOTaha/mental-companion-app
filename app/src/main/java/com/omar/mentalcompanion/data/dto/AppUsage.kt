@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.dto
+package com.omar.mentalcompanion.data.dto
 
 data class AppUsage(val packageName: String, val usageTime: Long) : Comparable<AppUsage> {
     override fun toString(): String {

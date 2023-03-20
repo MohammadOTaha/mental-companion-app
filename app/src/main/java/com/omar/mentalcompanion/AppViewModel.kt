@@ -2,8 +2,8 @@ package com.omar.mentalcompanion
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.omar.mentalcompanion.trackeddata.LocationLiveData
-import com.omar.mentalcompanion.trackeddata.UsageStatsData
+import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
+import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 

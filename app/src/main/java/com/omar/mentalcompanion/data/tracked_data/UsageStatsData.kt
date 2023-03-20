@@ -1,10 +1,10 @@
-package com.omar.mentalcompanion.trackeddata
+package com.omar.mentalcompanion.data.tracked_data
 
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.omar.mentalcompanion.dto.AppUsage
+import com.omar.mentalcompanion.data.dto.AppUsage
 
 class UsageStatsData(context: Context) {
     private val usageStatsManager: UsageStatsManager

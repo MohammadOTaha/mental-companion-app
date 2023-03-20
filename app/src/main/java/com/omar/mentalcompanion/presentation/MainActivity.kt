@@ -14,15 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import com.omar.mentalcompanion.AppViewModel
-import com.omar.mentalcompanion.services.BackgroundService
+import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
 import com.omar.mentalcompanion.presentation.collected_data.CollectedDataList
 import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.omar.mentalcompanion.services.BackgroundService
 
 class MainActivity : ComponentActivity() {
-
-    private val applicationViewModel: AppViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +65,6 @@ class MainActivity : ComponentActivity() {
 
     private fun init() {
         requestPermissions()
-
-        applicationViewModel.startLocationUpdates()
     }
 
     private fun requestPermissions() {
@@ -80,7 +75,11 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionsList.add(Manifest.permission.POST_NOTIFICATIONS)
         }
-
         ActivityCompat.requestPermissions(this, permissionsList.toTypedArray(), 0)
+
+        val usageStatsData: UsageStatsData by lazy { UsageStatsData(applicationContext) }
+        if (usageStatsData.getAppUsages().isEmpty()) {
+            this.startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
+        }
     }
 }

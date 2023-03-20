@@ -15,15 +15,6 @@ class UsageStatsData(context: Context) {
         } else {
             context.getSystemService("usagestats") as UsageStatsManager
         }
-
-        if (usageStatsManager.queryUsageStats(
-                UsageStatsManager.INTERVAL_DAILY,
-                System.currentTimeMillis() - ONE_DAY_MILLIS,
-                System.currentTimeMillis()
-            ).isEmpty()
-        ) {
-            context.startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
-        }
     }
 
     fun getTotalScreenTime(): String {
@@ -60,19 +51,6 @@ class UsageStatsData(context: Context) {
         }
 
         return appUsages.sorted()
-    }
-
-    fun refresh() {
-        val time = System.currentTimeMillis()
-        usageStatsManager.queryUsageStats(
-            UsageStatsManager.INTERVAL_DAILY,
-            time - ONE_DAY_MILLIS,
-            time
-        )
-    }
-
-    fun isUsageStatsPermissionGranted(): Boolean {
-        return getAppUsages().isNotEmpty()
     }
 
     companion object {

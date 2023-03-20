@@ -6,10 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -18,16 +15,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.omar.mentalcompanion.AppViewModel
 import androidx.compose.material3.Button
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 
 @Composable
 fun CollectedDataList (
     modifier: Modifier = Modifier,
     applicationViewModel: AppViewModel = viewModel()
 ) {
-    val location by applicationViewModel.getLocationLiveData().observeAsState()
-    val usageStats = remember { mutableStateOf(applicationViewModel.getUsageStatsData()) }
-    val totalScreenTime = remember { mutableStateOf(applicationViewModel.getTotalScreenTime()) }
+    val location by applicationViewModel.locationLiveData.observeAsState()
+    val usageStatsList = applicationViewModel.appUsageList.collectAsState()
+    val totalScreenTime = applicationViewModel.totalScreenTime.collectAsState()
 
     Column(
         modifier = Modifier
@@ -43,8 +40,9 @@ fun CollectedDataList (
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(onClick = {
-                    usageStats.value = applicationViewModel.getUsageStatsData()
-                    totalScreenTime.value = applicationViewModel.getTotalScreenTime()
+                    applicationViewModel.updateLocation()
+                    applicationViewModel.updateAppUsageList()
+                    applicationViewModel.updateTotalScreenTime()
                 }) {
                     Text(text = "Refresh")
                 }
@@ -54,7 +52,7 @@ fun CollectedDataList (
                 data = mapOf(
                     "Location" to "${location?.latitude}, ${location?.longitude}",
                     "Total Screen Time" to totalScreenTime.value,
-                    "Usage Stats" to usageStats.value,
+                    "Usage Stats" to usageStatsList.value,
                 )
             )
         }

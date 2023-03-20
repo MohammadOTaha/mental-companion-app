@@ -1,27 +1,49 @@
 package com.omar.mentalcompanion
 
 import android.app.Application
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.AndroidViewModel
+import com.omar.mentalcompanion.data.dto.AppUsage
 import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
 import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _locationLiveData = LocationLiveData(application)
-    private val _usageStatsData = UsageStatsData(application)
 
-    fun getLocationLiveData() = _locationLiveData
+    private val _usageStatsData: UsageStatsData by lazy { UsageStatsData(application) }
+    private val _appUsageList = MutableStateFlow(_usageStatsData.getAppUsages())
+    private val _totalScreenTime = MutableStateFlow(_usageStatsData.getTotalScreenTime())
 
-    fun startLocationUpdates() {
+    val locationLiveData: LocationLiveData
+        get() = _locationLiveData
+
+    val appUsageList: MutableStateFlow<List<AppUsage>>
+        get() = _appUsageList
+
+    val totalScreenTime: MutableStateFlow<String>
+        get() = _totalScreenTime
+
+    init {
         _locationLiveData.startLocationUpdates()
     }
 
-    fun getUsageStatsData() = _usageStatsData.getAppUsages()
-
-    fun getTotalScreenTime() = _usageStatsData.getTotalScreenTime()
-
-    fun updateUsageStatsData() {
-        _usageStatsData.refresh()
+    fun updateLocation() {
+        _locationLiveData.startLocationUpdates()
     }
 
+    fun updateAppUsageList() {
+        _appUsageList.value = _usageStatsData.getAppUsages()
+        _totalScreenTime.value = _usageStatsData.getTotalScreenTime()
+    }
+
+    fun updateTotalScreenTime() {
+        _totalScreenTime.value = _usageStatsData.getTotalScreenTime()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _locationLiveData.stopLocationUpdates()
+    }
 }

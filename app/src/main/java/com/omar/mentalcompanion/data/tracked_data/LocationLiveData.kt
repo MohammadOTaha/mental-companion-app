@@ -69,6 +69,10 @@ class LocationLiveData(var context: Context) : LiveData<LocationDetails>() {
         )
     }
 
+    internal fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
     private fun setLocationData(location: Location?) {
         location?.let { location ->
             value = LocationDetails(location.longitude.toString(), location.latitude.toString())

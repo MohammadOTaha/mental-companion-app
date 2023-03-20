@@ -1,6 +1,6 @@
 package com.omar.mentalcompanion.data.dto
 
-data class AppUsage(val packageName: String, val usageTime: Long) : Comparable<AppUsage> {
+data class AppUsage(var packageName: String, var usageTime: Long) : Comparable<AppUsage> {
     override fun toString(): String {
         val hours = usageTime / 3600
         val minutes = (usageTime % 3600) / 60

@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -58,6 +59,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0"
     implementation 'io.insert-koin:koin-androidx-compose:3.4.2'
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.4.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
 
 
     testImplementation 'junit:junit:4.13.2'

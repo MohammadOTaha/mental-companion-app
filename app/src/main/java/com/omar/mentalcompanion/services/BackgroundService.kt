@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import com.google.firebase.firestore.FirebaseFirestore
 import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +45,12 @@ class BackgroundService: Service() {
             val long = location.longitude.toString()
             val updatedNotification = notification.setContentText(
                 "Location: ($lat, $long)"
+            )
+            FirebaseFirestore.getInstance().collection("location").add(
+                hashMapOf(
+                    "lat" to lat,
+                    "long" to long
+                )
             )
             notificationService.notificationManager.notify(1, updatedNotification.build())
         }

@@ -18,7 +18,9 @@ import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
 import com.omar.mentalcompanion.presentation.collected_data.CollectedDataList
 import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
 import com.omar.mentalcompanion.services.BackgroundService
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

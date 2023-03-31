@@ -4,21 +4,15 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import com.omar.mentalcompanion.di.appModule
 import com.omar.mentalcompanion.services.NotificationService
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.GlobalContext
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
         buildNotificationChannel()
-
-        GlobalContext.startKoin {
-            androidContext(this@App)
-            modules(appModule)
-        }
     }
 
     private fun buildNotificationChannel() {

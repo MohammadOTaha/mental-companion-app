@@ -12,19 +12,17 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.omar.mentalcompanion.AppViewModel
 import androidx.compose.material3.Button
 import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun CollectedDataList (
-    modifier: Modifier = Modifier,
-    applicationViewModel: AppViewModel = viewModel()
-) {
+fun CollectedDataList (modifier: Modifier = Modifier) {
+    val applicationViewModel = hiltViewModel<AppViewModel>()
     val location by applicationViewModel.locationLiveData.observeAsState()
-    val usageStatsList = applicationViewModel.appUsageList.collectAsState()
     val totalScreenTime = applicationViewModel.totalScreenTime.collectAsState()
+    val usageStatsList = applicationViewModel.appUsageList.collectAsState()
     val phoneCallsLog = applicationViewModel.phoneCallsLog.collectAsState()
 
     Column(

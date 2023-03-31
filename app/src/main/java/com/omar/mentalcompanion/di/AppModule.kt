@@ -1,14 +1,43 @@
 package com.omar.mentalcompanion.di
 
+import android.app.Application
+import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
 import com.omar.mentalcompanion.AppViewModel
+import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
 import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
-import org.koin.android.ext.koin.androidApplication
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-val appModule = module {
-    single { UsageStatsData(androidApplication()) }
-    viewModel { AppViewModel(androidApplication()) }
-    single { FirebaseFirestore.getInstance() }
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideUsageStatsData(@ApplicationContext context: Context): UsageStatsData {
+        return UsageStatsData(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationLiveData(@ApplicationContext context: Context): LocationLiveData {
+        return LocationLiveData(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppViewModel(app: Application, usageStatsData: UsageStatsData, locationLiveData: LocationLiveData): AppViewModel {
+        return AppViewModel(app, usageStatsData, locationLiveData)
+    }
 }

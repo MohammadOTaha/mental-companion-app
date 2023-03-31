@@ -8,20 +8,24 @@ import com.omar.mentalcompanion.data.dto.PhoneCallsLog
 import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
 import com.omar.mentalcompanion.data.tracked_data.PhoneCallsLogData
 import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
-class AppViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class AppViewModel @Inject constructor(
+    application: Application,
+    private val usageStats: UsageStatsData,
+    private val location: LocationLiveData
+) : AndroidViewModel(application) {
 
-    private val _locationLiveData = LocationLiveData(application)
-
-    private val _usageStatsData: UsageStatsData by lazy { UsageStatsData(application) }
-    private val _appUsageList = MutableStateFlow(_usageStatsData.getAppUsages())
-    private val _totalScreenTime = MutableStateFlow(_usageStatsData.getTotalScreenTime())
+    private val _appUsageList = MutableStateFlow(usageStats.getAppUsages())
+    private val _totalScreenTime = MutableStateFlow(usageStats.getTotalScreenTime())
 
     private val _phoneCallsLog = MutableStateFlow(PhoneCallsLogData(application).getCallLogs())
 
     val locationLiveData: LocationLiveData
-        get() = _locationLiveData
+        get() = location
 
     val appUsageList: MutableStateFlow<List<AppUsage>>
         get() = _appUsageList
@@ -33,24 +37,24 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         get() = _phoneCallsLog
 
     init {
-        _locationLiveData.startLocationUpdates()
+        location.startLocationUpdates()
     }
 
     fun updateLocation() {
-        _locationLiveData.startLocationUpdates()
+        location.startLocationUpdates()
     }
 
     fun updateAppUsageList() {
-        _appUsageList.value = _usageStatsData.getAppUsages()
-        _totalScreenTime.value = _usageStatsData.getTotalScreenTime()
+        _appUsageList.value = usageStats.getAppUsages()
+        _totalScreenTime.value = usageStats.getTotalScreenTime()
     }
 
     fun updateTotalScreenTime() {
-        _totalScreenTime.value = _usageStatsData.getTotalScreenTime()
+        _totalScreenTime.value = usageStats.getTotalScreenTime()
     }
 
     override fun onCleared() {
         super.onCleared()
-        _locationLiveData.stopLocationUpdates()
+        location.stopLocationUpdates()
     }
 }

@@ -25,6 +25,7 @@ fun CollectedDataList (
     val location by applicationViewModel.locationLiveData.observeAsState()
     val usageStatsList = applicationViewModel.appUsageList.collectAsState()
     val totalScreenTime = applicationViewModel.totalScreenTime.collectAsState()
+    val phoneCallsLog = applicationViewModel.phoneCallsLog.collectAsState()
 
     Column(
         modifier = Modifier
@@ -53,6 +54,7 @@ fun CollectedDataList (
                     "Location" to "${location?.latitude}, ${location?.longitude}",
                     "Total Screen Time" to totalScreenTime.value,
                     "Usage Stats" to usageStatsList.value,
+                    "Phone Calls Log" to phoneCallsLog.value
                 )
             )
         }

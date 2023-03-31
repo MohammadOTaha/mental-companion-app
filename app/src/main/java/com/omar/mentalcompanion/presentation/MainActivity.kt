@@ -70,7 +70,8 @@ class MainActivity : ComponentActivity() {
     private fun requestPermissions() {
         val permissionsList = mutableListOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_CALL_LOG,
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionsList.add(Manifest.permission.POST_NOTIFICATIONS)

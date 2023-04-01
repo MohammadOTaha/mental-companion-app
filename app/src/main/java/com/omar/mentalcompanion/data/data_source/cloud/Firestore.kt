@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.data.data_source
+package com.omar.mentalcompanion.data.data_source.cloud
 
 import com.google.firebase.firestore.FirebaseFirestore
 

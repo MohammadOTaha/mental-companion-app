@@ -1,21 +1,25 @@
-package com.omar.mentalcompanion.services
+package com.omar.mentalcompanion.domain.services
 
 import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import com.google.firebase.firestore.FirebaseFirestore
-import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import com.omar.mentalcompanion.data.entities.Location
+import com.omar.mentalcompanion.domain.repositories.LocationRepository
+import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class BackgroundService: Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var notificationService: NotificationService
     private lateinit var locationLiveData: LocationLiveData
+    @Inject
+    lateinit var locationRepository: LocationRepository
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -46,16 +50,26 @@ class BackgroundService: Service() {
             val updatedNotification = notification.setContentText(
                 "Location: ($lat, $long)"
             )
+
             FirebaseFirestore.getInstance().collection("location").add(
                 hashMapOf(
                     "lat" to lat,
-                    "long" to long
+                    "lon" to long
                 )
             )
+
+            insertLocation(Location(lat.toDouble(), long.toDouble(), 0.0f, 0))
+
             notificationService.notificationManager.notify(1, updatedNotification.build())
         }
 
         startForeground(1, notification.build())
+    }
+
+    private fun insertLocation(location: Location) {
+        serviceScope.launch {
+            locationRepository.insertLocation(location)
+        }
     }
 
     private fun stop() {

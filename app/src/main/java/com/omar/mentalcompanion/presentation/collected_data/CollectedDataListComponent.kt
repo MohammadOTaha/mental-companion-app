@@ -42,6 +42,7 @@ fun CollectedDataList (modifier: Modifier = Modifier) {
                     applicationViewModel.updateLocation()
                     applicationViewModel.updateAppUsageList()
                     applicationViewModel.updateTotalScreenTime()
+                    applicationViewModel.updatePhoneCallsLog()
                 }) {
                     Text(text = "Refresh")
                 }

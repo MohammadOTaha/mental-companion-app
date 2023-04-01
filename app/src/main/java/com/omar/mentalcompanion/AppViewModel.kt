@@ -5,9 +5,9 @@ import androidx.compose.runtime.MutableState
 import androidx.lifecycle.AndroidViewModel
 import com.omar.mentalcompanion.data.dto.AppUsage
 import com.omar.mentalcompanion.data.dto.PhoneCallsLog
-import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
-import com.omar.mentalcompanion.data.tracked_data.PhoneCallsLogData
-import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
+import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
+import com.omar.mentalcompanion.domain.tracked_data.PhoneCallsLogData
+import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
@@ -51,6 +51,10 @@ class AppViewModel @Inject constructor(
 
     fun updateTotalScreenTime() {
         _totalScreenTime.value = usageStats.getTotalScreenTime()
+    }
+
+    fun updatePhoneCallsLog() {
+        _phoneCallsLog.value = PhoneCallsLogData(getApplication()).getCallLogs()
     }
 
     override fun onCleared() {

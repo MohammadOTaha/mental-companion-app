@@ -14,10 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
+import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import com.omar.mentalcompanion.presentation.collected_data.CollectedDataList
 import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
-import com.omar.mentalcompanion.services.BackgroundService
+import com.omar.mentalcompanion.domain.services.BackgroundService
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

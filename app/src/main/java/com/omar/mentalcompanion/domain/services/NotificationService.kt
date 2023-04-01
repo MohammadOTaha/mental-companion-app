@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.services
+package com.omar.mentalcompanion.domain.services
 
 import android.app.NotificationManager
 import android.app.PendingIntent

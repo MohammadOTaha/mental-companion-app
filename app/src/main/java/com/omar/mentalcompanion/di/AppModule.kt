@@ -2,10 +2,13 @@ package com.omar.mentalcompanion.di
 
 import android.app.Application
 import android.content.Context
+import androidx.room.Room
 import com.google.firebase.firestore.FirebaseFirestore
 import com.omar.mentalcompanion.AppViewModel
-import com.omar.mentalcompanion.data.tracked_data.LocationLiveData
-import com.omar.mentalcompanion.data.tracked_data.UsageStatsData
+import com.omar.mentalcompanion.data.data_source.local.RoomDb
+import com.omar.mentalcompanion.domain.repositories.LocationRepository
+import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
+import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +19,22 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideRoomDatabase(app: Application): RoomDb {
+        return Room.databaseBuilder(
+            app,
+            RoomDb::class.java,
+            RoomDb.DATABASE_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationRepository(db: RoomDb): LocationRepository {
+        return LocationRepository(db.locationDao())
+    }
 
     @Provides
     @Singleton

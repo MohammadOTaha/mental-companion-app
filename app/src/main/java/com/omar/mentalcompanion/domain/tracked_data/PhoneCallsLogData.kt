@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.data.tracked_data
+package com.omar.mentalcompanion.domain.tracked_data
 
 import android.annotation.SuppressLint
 import android.content.Context

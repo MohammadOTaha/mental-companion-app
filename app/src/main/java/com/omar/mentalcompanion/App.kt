@@ -4,7 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import com.omar.mentalcompanion.services.NotificationService
+import com.omar.mentalcompanion.domain.services.NotificationService
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

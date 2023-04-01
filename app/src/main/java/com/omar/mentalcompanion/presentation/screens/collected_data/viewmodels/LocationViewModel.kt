@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.presentation.view_models
+package com.omar.mentalcompanion.presentation.screens.collected_data.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
-import com.omar.mentalcompanion.presentation.collected_data.CollectedDataList
+import com.omar.mentalcompanion.presentation.screens.collected_data.components.CollectedDataList
 import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
 import com.omar.mentalcompanion.domain.services.BackgroundService
 import dagger.hilt.android.AndroidEntryPoint

@@ -8,9 +8,9 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import com.google.android.gms.location.*
-import com.omar.mentalcompanion.data.dto.LocationDetails
+import com.omar.mentalcompanion.data.entities.Location as LocationEntity
 
-class LocationLiveData(var context: Context) : LiveData<LocationDetails>() {
+class LocationLiveData(var context: Context) : LiveData<LocationEntity>() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     override fun onActive() {
@@ -75,7 +75,7 @@ class LocationLiveData(var context: Context) : LiveData<LocationDetails>() {
 
     private fun setLocationData(location: Location?) {
         location?.let { location ->
-            value = LocationDetails(location.longitude.toString(), location.latitude.toString())
+            value = LocationEntity(location.longitude, location.latitude, location.accuracy, location.time)
         }
     }
 

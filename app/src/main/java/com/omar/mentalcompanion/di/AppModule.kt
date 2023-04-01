@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.google.firebase.firestore.FirebaseFirestore
 import com.omar.mentalcompanion.AppViewModel
 import com.omar.mentalcompanion.data.data_source.local.RoomDb
+import com.omar.mentalcompanion.domain.repositories.ApplicationUsageRepository
 import com.omar.mentalcompanion.domain.repositories.LocationRepository
 import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
@@ -27,13 +28,19 @@ object AppModule {
             app,
             RoomDb::class.java,
             RoomDb.DATABASE_NAME
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
     @Singleton
     fun provideLocationRepository(db: RoomDb): LocationRepository {
         return LocationRepository(db.locationDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideApplicationUsageRepository(db: RoomDb): ApplicationUsageRepository {
+        return ApplicationUsageRepository(db.applicationUsageDao())
     }
 
     @Provides

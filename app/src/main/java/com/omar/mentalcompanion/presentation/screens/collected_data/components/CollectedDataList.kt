@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.presentation.collected_data
+package com.omar.mentalcompanion.presentation.screens.collected_data.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,10 +16,14 @@ import com.omar.mentalcompanion.AppViewModel
 import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.omar.mentalcompanion.data.entities.ApplicationUsage
+import com.omar.mentalcompanion.domain.utils.toFormattedTimeString
+import com.omar.mentalcompanion.presentation.screens.collected_data.viewmodels.ApplicationUsageViewModel
 
 @Composable
 fun CollectedDataList (modifier: Modifier = Modifier) {
     val applicationViewModel = hiltViewModel<AppViewModel>()
+    val appUsageViewModel = hiltViewModel<ApplicationUsageViewModel>()
     val location by applicationViewModel.locationLiveData.observeAsState()
     val totalScreenTime = applicationViewModel.totalScreenTime.collectAsState()
     val usageStatsList = applicationViewModel.appUsageList.collectAsState()
@@ -43,6 +47,10 @@ fun CollectedDataList (modifier: Modifier = Modifier) {
                     applicationViewModel.updateAppUsageList()
                     applicationViewModel.updateTotalScreenTime()
                     applicationViewModel.updatePhoneCallsLog()
+
+                    for (usage in usageStatsList.value) {
+                        appUsageViewModel.upsertApplicationUsage(ApplicationUsage(usage.packageName, usage.usageTime))
+                    }
                 }) {
                     Text(text = "Refresh")
                 }
@@ -50,7 +58,7 @@ fun CollectedDataList (modifier: Modifier = Modifier) {
 
             TableScreen(
                 data = mapOf(
-                    "Location" to "${location?.latitude}, ${location?.longitude}",
+                    "Location" to "Latitude: ${location?.latitude}, Longitude: ${location?.longitude} \nAccuracy: ${location?.accuracy}\nTime: ${location?.time?.toFormattedTimeString()}",
                     "Total Screen Time" to totalScreenTime.value,
                     "Usage Stats" to usageStatsList.value,
                     "Phone Calls Log" to phoneCallsLog.value

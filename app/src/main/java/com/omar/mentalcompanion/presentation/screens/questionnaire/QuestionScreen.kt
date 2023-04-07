@@ -12,36 +12,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
+import com.omar.mentalcompanion.presentation.screens.questionnaire.events.QuestionnaireEvent
+import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.Answers
 import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.CommonComponents.ResponsiveText
 import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.Questions
-import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.Answers
-
+import com.omar.mentalcompanion.presentation.screens.questionnaire.viewmodels.QuestionnaireViewModel
 
 
 @Composable
 fun QuestionScreen(
-    questionNumber: Int,
+    viewModel: QuestionnaireViewModel = hiltViewModel(),
     navController: NavController
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFBDF384)),
-        verticalArrangement = if (questionNumber == 0) Arrangement.Center else Arrangement.Top
+        verticalArrangement = if (viewModel.getQuestionNumber() == 0) Arrangement.Center else Arrangement.Top
     ) {
-        if (questionNumber == 0) {
-            HeaderQuestion(navController)
+        if (viewModel.getQuestionNumber() == 0) {
+            HeaderQuestion(viewModel)
         } else {
-            Question(questionNumber, navController)
+            Question(viewModel.getQuestionNumber(), viewModel, navController)
         }
     }
 }
 
 @Composable
 private fun HeaderQuestion(
-    navController: NavController
+    viewModel: QuestionnaireViewModel
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
@@ -51,7 +53,7 @@ private fun HeaderQuestion(
 
         ExtendedFloatingActionButton(
             onClick = {
-                navController.navigate(ActiveScreen.QuestionnaireScreen.getRouteWithArgs("1"))
+                viewModel.onEvent(QuestionnaireEvent.NextQuestion)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,6 +71,7 @@ private fun HeaderQuestion(
 @Composable
 private fun Question(
     questionNumber: Int,
+    viewModel: QuestionnaireViewModel,
     navController: NavController
 ) {
     Column(
@@ -77,49 +80,65 @@ private fun Question(
         ResponsiveText(
             text = Questions.get(questionNumber),
             style = MaterialTheme.typography.titleLarge,
-            maxLines = 8
+            maxLines = 10
         )
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Answers.getAll().forEach { answer ->
-                    ExtendedFloatingActionButton(
+                    TextButton(
                         onClick = {
-                            navController.navigate(ActiveScreen.QuestionnaireScreen.getRouteWithArgs((questionNumber + 1).toString()))
+                            viewModel.onEvent(QuestionnaireEvent.SelectAnswer(questionNumber, Answers.getAll().indexOf(answer)))
+
+                            if (questionNumber < 9) {
+                                viewModel.onEvent(QuestionnaireEvent.NextQuestion)
+                            } else {
+                                navController.navigate(ActiveScreen.CollectedDataScreen.route)
+                            }
                         },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Start)
-                        ,
-                        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-                        containerColor = Color.Transparent,
-                        shape = MaterialTheme.shapes.small,
+                            .padding(start = 0.dp),
                     ) {
                         Text(
                             text = answer,
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Start,
+                            color = Color(0xFF000000),
                         )
                     }
                 }
             }
 
-            ExtendedFloatingActionButton(
-                onClick = {
-                    navController.navigate(ActiveScreen.QuestionnaireScreen.getRouteWithArgs((questionNumber - 1).toString()))
-                },
-                elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-                containerColor = Color.Transparent,
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBack,
-                    contentDescription = "Back"
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        viewModel.onEvent(QuestionnaireEvent.PreviousQuestion)
+                    },
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+                    containerColor = Color.Transparent,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+
+                Text(
+                    text = "$questionNumber/9",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF000000),
                 )
             }
         }

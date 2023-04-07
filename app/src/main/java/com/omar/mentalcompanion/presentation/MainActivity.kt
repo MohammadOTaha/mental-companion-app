@@ -85,8 +85,7 @@ class MainActivity : ComponentActivity() {
                         arguments = ActiveScreen.QuestionnaireScreen.args
                     ) {
                         QuestionScreen(
-                            questionNumber = it.arguments?.getInt("questionNumber") ?: 0,
-                            navController = navController
+                            navController = navController,
                         )
                     }
                 }

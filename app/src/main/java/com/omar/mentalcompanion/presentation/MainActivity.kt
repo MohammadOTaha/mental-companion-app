@@ -14,10 +14,15 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
-import com.omar.mentalcompanion.presentation.screens.collected_data.components.CollectedDataList
+import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
 import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
 import com.omar.mentalcompanion.domain.services.BackgroundService
+import com.omar.mentalcompanion.presentation.screens.ActiveScreen
+import com.omar.mentalcompanion.presentation.screens.questionnaire.QuestionScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,36 +35,60 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MentalCompanionTheme {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = ActiveScreen.CollectedDataScreen.route
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Button(onClick = {
-                            Intent(applicationContext, BackgroundService::class.java).apply {
-                                action = BackgroundService.ACTION_START
-                                startService(this)
-                            }
-                        }) {
-                            Text(text = "Start Service")
-                        }
+                    composable(route = ActiveScreen.CollectedDataScreen.route) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                Button(onClick = {
+                                    Intent(
+                                        applicationContext,
+                                        BackgroundService::class.java
+                                    ).apply {
+                                        action = BackgroundService.ACTION_START
+                                        startService(this)
+                                    }
+                                }) {
+                                    Text(text = "Start Service")
+                                }
 
-                        Button(onClick = {
-                            Intent(applicationContext, BackgroundService::class.java).apply {
-                                action = BackgroundService.ACTION_STOP
-                                startService(this)
+                                Button(onClick = {
+                                    Intent(
+                                        applicationContext,
+                                        BackgroundService::class.java
+                                    ).apply {
+                                        action = BackgroundService.ACTION_STOP
+                                        startService(this)
+                                    }
+                                }) {
+                                    Text(text = "Stop Service")
+                                }
                             }
-                        }) {
-                            Text(text = "Stop Service")
+
+                            CollectedDataScreen(navController = navController)
                         }
                     }
 
-                    CollectedDataList()
+                    composable(
+                        route = ActiveScreen.QuestionnaireScreen.route + "/{questionNumber}",
+                        arguments = ActiveScreen.QuestionnaireScreen.args
+                    ) {
+                        QuestionScreen(
+                            questionNumber = it.arguments?.getInt("questionNumber") ?: 0,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }

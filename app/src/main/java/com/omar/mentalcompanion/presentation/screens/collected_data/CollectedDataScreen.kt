@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.presentation.screens.collected_data.components
+package com.omar.mentalcompanion.presentation.screens.collected_data
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,20 +8,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.omar.mentalcompanion.AppViewModel
 import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.omar.mentalcompanion.data.entities.ApplicationUsage
 import com.omar.mentalcompanion.domain.utils.toFormattedTimeString
+import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import com.omar.mentalcompanion.presentation.screens.collected_data.viewmodels.ApplicationUsageViewModel
 
 @Composable
-fun CollectedDataList (modifier: Modifier = Modifier) {
+fun CollectedDataScreen (
+    navController: NavController
+) {
     val applicationViewModel = hiltViewModel<AppViewModel>()
     val appUsageViewModel = hiltViewModel<ApplicationUsageViewModel>()
     val location by applicationViewModel.locationLiveData.observeAsState()
@@ -53,6 +55,12 @@ fun CollectedDataList (modifier: Modifier = Modifier) {
                     }
                 }) {
                     Text(text = "Refresh")
+                }
+
+                Button(onClick = {
+                    navController.navigate(ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0"))
+                }) {
+                    Text(text = "Go to Questionnaire")
                 }
             }
 
@@ -98,10 +106,7 @@ private fun CollectedDataItem(name: String, value: String) {
                 .padding(16.dp)
         ) {
             Text(
-                text = name, style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
-                ),
+                text = name, style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )

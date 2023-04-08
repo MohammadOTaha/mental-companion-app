@@ -43,12 +43,14 @@ class MainViewModel @Inject constructor(
 
     fun initMetaData() {
         viewModelScope.launch {
-            metaDataRepository.upsertMetaData(
-                MetaData(
-                    key = "last_questionnaire_date",
-                    value = "1970-01-01"
+            if (metaDataRepository.getMetaDataValue("last_questionnaire_date").isEmpty()) {
+                metaDataRepository.upsertMetaData(
+                    MetaData(
+                        key = "last_questionnaire_date",
+                        value = "1970-01-01"
+                    )
                 )
-            )
+            }
         }
     }
 

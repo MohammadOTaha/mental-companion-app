@@ -6,8 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omar.mentalcompanion.data.entities.MetaData
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
+import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.time.LocalDate
+import java.time.Period
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,6 +49,21 @@ class MainViewModel @Inject constructor(
                     value = "1970-01-01"
                 )
             )
+        }
+    }
+
+    fun getStartDestination(): String {
+        return runBlocking {
+            val lastQuestionnaireDate = async { metaDataRepository.getMetaDataValue("last_questionnaire_date") }
+            val today = LocalDate.now()
+            val lastQuestionnaireDateParsed = LocalDate.parse(lastQuestionnaireDate.await())
+            val daysSinceLastQuestionnaire = Period.between(lastQuestionnaireDateParsed, today).days
+
+            if (daysSinceLastQuestionnaire >= 7) {
+                ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0")
+            } else {
+                ActiveScreen.CollectedDataScreen.route
+            }
         }
     }
 }

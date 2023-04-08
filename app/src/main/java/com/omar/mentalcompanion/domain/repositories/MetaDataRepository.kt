@@ -9,5 +9,5 @@ class MetaDataRepository(
 
     suspend fun upsertMetaData(metaData: MetaData) = metaDataDao.upsertMetaData(metaData)
 
-    suspend fun getMetaData(key: String) = metaDataDao.getMetaData(key)
+    suspend fun getMetaDataValue(key: String) = metaDataDao.getMetaData(key)
 }

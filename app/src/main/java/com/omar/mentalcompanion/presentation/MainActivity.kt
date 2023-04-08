@@ -24,6 +24,7 @@ import com.omar.mentalcompanion.presentation.screens.questionnaire.QuestionScree
 import dagger.hilt.android.AndroidEntryPoint
 import android.provider.Settings
 import android.net.Uri
+import android.util.Log
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -76,10 +77,12 @@ class MainActivity : ComponentActivity() {
                     }
                 )
 
+                Log.d("123", viewModel.getStartDestination())
+
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = ActiveScreen.CollectedDataScreen.route
+                    startDestination = viewModel.getStartDestination()
                 ) {
                     composable(route = ActiveScreen.CollectedDataScreen.route) {
                         Button(onClick = {

@@ -32,6 +32,7 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -81,6 +82,9 @@ dependencies {
 
     // Work Manager with Coroutines
     implementation "androidx.work:work-runtime-ktx:2.8.1"
+
+    // Android Desugaring
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

@@ -11,3 +11,13 @@ data class MetaData (
     @ColumnInfo(name = "value")
     var value: String
 )
+
+object MetaDataKeys {
+    const val LAST_QUESTIONNAIRE_DATE = "last_questionnaire_date"
+    const val LAST_QUESTIONNAIRE_SCORE = "last_questionnaire_score"
+}
+
+object MetaDataValues {
+    const val EARLIEST_DATE = "1970-01-01"
+    const val NO_SCORE = "-1"
+}

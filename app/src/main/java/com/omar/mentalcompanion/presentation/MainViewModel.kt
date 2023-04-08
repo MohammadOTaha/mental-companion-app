@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omar.mentalcompanion.data.entities.MetaData
+import com.omar.mentalcompanion.data.entities.MetaDataKeys
+import com.omar.mentalcompanion.data.entities.MetaDataValues
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,12 +44,19 @@ class MainViewModel @Inject constructor(
     }
 
     fun initMetaData() {
-        viewModelScope.launch {
-            if (metaDataRepository.getMetaDataValue("last_questionnaire_date").isEmpty()) {
+        runBlocking {
+            if (metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE).isNullOrEmpty()) {
                 metaDataRepository.upsertMetaData(
                     MetaData(
-                        key = "last_questionnaire_date",
-                        value = "1970-01-01"
+                        key = MetaDataKeys.LAST_QUESTIONNAIRE_DATE,
+                        value = MetaDataValues.EARLIEST_DATE
+                    )
+                )
+
+                metaDataRepository.upsertMetaData(
+                    MetaData(
+                        key = MetaDataKeys.LAST_QUESTIONNAIRE_SCORE,
+                        value = MetaDataValues.NO_SCORE
                     )
                 )
             }
@@ -56,7 +65,7 @@ class MainViewModel @Inject constructor(
 
     fun getStartDestination(): String {
         return runBlocking {
-            val lastQuestionnaireDate = async { metaDataRepository.getMetaDataValue("last_questionnaire_date") }
+            val lastQuestionnaireDate = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE) }
             val today = LocalDate.now()
             val lastQuestionnaireDateParsed = LocalDate.parse(lastQuestionnaireDate.await())
             val daysSinceLastQuestionnaire = Period.between(lastQuestionnaireDateParsed, today).days

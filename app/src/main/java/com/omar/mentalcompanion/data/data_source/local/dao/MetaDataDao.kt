@@ -12,5 +12,5 @@ interface MetaDataDao {
     suspend fun upsertMetaData(metaData: MetaData)
 
     @Query("SELECT value FROM metadata WHERE key = :key")
-    suspend fun getMetaData(key: String): String
+    suspend fun getMetaData(key: String): String?
 }

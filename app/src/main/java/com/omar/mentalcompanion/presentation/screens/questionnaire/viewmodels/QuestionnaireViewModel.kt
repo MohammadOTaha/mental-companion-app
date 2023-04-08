@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.omar.mentalcompanion.data.entities.MetaData
+import com.omar.mentalcompanion.data.entities.MetaDataKeys
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.presentation.screens.questionnaire.events.QuestionnaireEvent
 import com.omar.mentalcompanion.presentation.screens.questionnaire.states.QuestionnaireState
@@ -46,8 +47,15 @@ class QuestionnaireViewModel @Inject constructor(
                 runBlocking {
                     metaDataRepository.upsertMetaData(
                         MetaData(
-                            key = "last_questionnaire_date",
+                            key = MetaDataKeys.LAST_QUESTIONNAIRE_DATE,
                             value = LocalDate.now().toString()
+                        )
+                    )
+
+                    metaDataRepository.upsertMetaData(
+                        MetaData(
+                            key = MetaDataKeys.LAST_QUESTIONNAIRE_SCORE,
+                            value = getScore().toString()
                         )
                     )
                 }

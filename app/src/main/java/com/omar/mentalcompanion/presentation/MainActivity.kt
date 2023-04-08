@@ -10,29 +10,27 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
-import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
 import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
-import com.omar.mentalcompanion.domain.services.BackgroundService
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import com.omar.mentalcompanion.presentation.screens.questionnaire.QuestionScreen
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.lifecycle.viewmodel.compose.viewModel
 import android.provider.Settings
 import android.net.Uri
 import androidx.hilt.navigation.compose.hiltViewModel
-import javax.inject.Inject
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.omar.mentalcompanion.domain.workers.QuestionnaireNotificationWorker
+import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
@@ -40,6 +38,25 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestPermissions()
+
+        val questionnaireNotificationWorker =
+            PeriodicWorkRequestBuilder<QuestionnaireNotificationWorker>(
+                20,
+                TimeUnit.MINUTES
+            ).setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            ).build()
+        val workManager = WorkManager.getInstance(applicationContext)
+
+        workManager.enqueueUniquePeriodicWork(
+            "QuestionnaireNotificationWorker",
+            androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+            questionnaireNotificationWorker
+        )
 
         setContent {
             MentalCompanionTheme {
@@ -152,20 +169,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun requestPermissions() {
-        val permissionsList = mutableListOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.READ_CALL_LOG,
-        )
+        val permissionsList = emptyList<String>().toMutableList()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionsList.add(Manifest.permission.POST_NOTIFICATIONS)
         }
         ActivityCompat.requestPermissions(this, permissionsList.toTypedArray(), 0)
 
-        val usageStatsData: UsageStatsData by lazy { UsageStatsData(applicationContext) }
-        if (usageStatsData.getAppUsages().isEmpty()) {
-            this.startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
-        }
+//        val usageStatsData: UsageStatsData by lazy { UsageStatsData(applicationContext) }
+//        if (usageStatsData.getAppUsages().isEmpty()) {
+//            this.startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
+//        }
     }
 }
 

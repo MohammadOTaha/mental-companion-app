@@ -11,6 +11,7 @@ import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class BackgroundService: Service() {
@@ -60,7 +61,7 @@ class BackgroundService: Service() {
 
             insertLocation(Location(lat.toDouble(), long.toDouble(), 0.0f, 0))
 
-            notificationService.notificationManager.notify(1, updatedNotification.build())
+            notificationService.notificationManager.notify(Random.nextInt(), updatedNotification.build())
         }
 
         startForeground(1, notification.build())

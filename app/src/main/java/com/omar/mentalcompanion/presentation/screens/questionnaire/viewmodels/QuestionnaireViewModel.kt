@@ -3,13 +3,19 @@ package com.omar.mentalcompanion.presentation.screens.questionnaire.viewmodels
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.omar.mentalcompanion.data.entities.MetaData
+import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.presentation.screens.questionnaire.events.QuestionnaireEvent
 import com.omar.mentalcompanion.presentation.screens.questionnaire.states.QuestionnaireState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.runBlocking
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class QuestionnaireViewModel @Inject constructor(): ViewModel() {
+class QuestionnaireViewModel @Inject constructor(
+    private val metaDataRepository: MetaDataRepository
+): ViewModel() {
     private val _state = mutableStateOf(QuestionnaireState())
     private val state: State<QuestionnaireState> = _state
 
@@ -35,6 +41,16 @@ class QuestionnaireViewModel @Inject constructor(): ViewModel() {
                         set(event.questionNumber, event.answerNumber)
                     }
                 )
+            }
+            is QuestionnaireEvent.FinishQuestionnaire -> {
+                runBlocking {
+                    metaDataRepository.upsertMetaData(
+                        MetaData(
+                            key = "last_questionnaire_date",
+                            value = LocalDate.now().toString()
+                        )
+                    )
+                }
             }
         }
     }

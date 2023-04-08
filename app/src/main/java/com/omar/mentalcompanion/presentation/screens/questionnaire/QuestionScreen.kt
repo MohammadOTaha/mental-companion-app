@@ -99,6 +99,7 @@ private fun Question(
                             if (questionNumber < 9) {
                                 viewModel.onEvent(QuestionnaireEvent.NextQuestion)
                             } else {
+                                viewModel.onEvent(QuestionnaireEvent.FinishQuestionnaire)
                                 navController.navigate(ActiveScreen.CollectedDataScreen.route)
                             }
                         },

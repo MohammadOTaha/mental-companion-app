@@ -8,6 +8,7 @@ import com.omar.mentalcompanion.AppViewModel
 import com.omar.mentalcompanion.data.data_source.local.RoomDb
 import com.omar.mentalcompanion.domain.repositories.ApplicationUsageRepository
 import com.omar.mentalcompanion.domain.repositories.LocationRepository
+import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import dagger.Module
@@ -41,6 +42,12 @@ object AppModule {
     @Singleton
     fun provideApplicationUsageRepository(db: RoomDb): ApplicationUsageRepository {
         return ApplicationUsageRepository(db.applicationUsageDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideMetaDataRepository(db: RoomDb): MetaDataRepository {
+        return MetaDataRepository(db.metaDataDao())
     }
 
     @Provides

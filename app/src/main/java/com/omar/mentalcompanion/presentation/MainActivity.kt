@@ -31,32 +31,26 @@ import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.provider.Settings
 import android.net.Uri
+import androidx.hilt.navigation.compose.hiltViewModel
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val permissionsToRequest = arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.READ_CALL_LOG,
-    )
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.init()
-
         setContent {
             MentalCompanionTheme {
-                val viewModel = viewModel<MainViewModel>()
-                val dialogQueue = viewModel.visiblePermissionDialogQueue
+                val viewModel = hiltViewModel<MainViewModel>()
+
+                init(viewModel)
 
                 val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestMultiplePermissions(),
                     onResult = { perms ->
-                        permissionsToRequest.forEach { permission ->
+                        viewModel.permissionsToRequest.forEach { permission ->
                             viewModel.onPermissionResult(
                                 permission = permission,
                                 isGranted = perms[permission] == true
@@ -72,12 +66,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(route = ActiveScreen.CollectedDataScreen.route) {
                         Button(onClick = {
-                            multiplePermissionResultLauncher.launch(permissionsToRequest)
+                            multiplePermissionResultLauncher.launch(viewModel.permissionsToRequest)
                         }) {
                             Text(text = "Request multiple permission")
                         }
 
-                        dialogQueue
+                        viewModel.visiblePermissionDialogQueue
                             .reversed()
                             .forEach { permission ->
                                 PermissionDialog(
@@ -153,8 +147,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun init() {
-//        requestPermissions()
+    private fun init(viewModel: MainViewModel) {
+        viewModel.initMetaData()
     }
 
     private fun requestPermissions() {

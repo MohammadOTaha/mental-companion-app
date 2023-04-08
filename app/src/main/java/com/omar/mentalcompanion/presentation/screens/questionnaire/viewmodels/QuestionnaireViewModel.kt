@@ -15,7 +15,7 @@ class QuestionnaireViewModel @Inject constructor(): ViewModel() {
 
     fun getQuestionNumber() = state.value.questionNumber
 
-    fun getSelectedAnswers() = state.value.selectedAnswers
+    fun getScore() = state.value.selectedAnswers.sum()
 
     fun onEvent(event: QuestionnaireEvent) {
         when (event) {

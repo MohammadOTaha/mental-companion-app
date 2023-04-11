@@ -24,7 +24,9 @@ fun WelcomeScreen(
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // text in the middle of the screen
+        // empty element to push the text to the bottom
+        Spacer(modifier = Modifier)
+
         Text(
             text = "Hello!\nYour next questionnaire is in: ${mainViewModel.getTimeUntilNextQuestionnaire()} days.",
             textAlign = TextAlign.Center,
@@ -32,10 +34,8 @@ fun WelcomeScreen(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .align(Alignment.CenterHorizontally)
-                .background(MaterialTheme.colorScheme.primary)
         )
 
-        // thank you text at the bottom
         Text(
             text = "Thank you for beta testing the app ♥",
             textAlign = TextAlign.Center,

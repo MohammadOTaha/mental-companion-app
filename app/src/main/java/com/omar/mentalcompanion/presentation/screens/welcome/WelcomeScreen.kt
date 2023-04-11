@@ -2,6 +2,7 @@ package com.omar.mentalcompanion.presentation.screens.welcome
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.omar.mentalcompanion.presentation.MainViewModel
+import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 
 @Composable
 fun WelcomeScreen(
@@ -35,6 +37,12 @@ fun WelcomeScreen(
                 .wrapContentHeight()
                 .align(Alignment.CenterHorizontally)
         )
+
+        Button(onClick = {
+            navController.navigate(ActiveScreen.CollectedDataScreen.route)
+        }) {
+            Text(text = "Continue")
+        }
 
         Text(
             text = "Thank you for beta testing the app ♥",

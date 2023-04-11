@@ -30,13 +30,19 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.domain.workers.QuestionnaireNotificationWorker
+import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
 import com.omar.mentalcompanion.presentation.screens.welcome.WelcomeScreen
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var syncService: SyncService
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,36 +94,38 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = ActiveScreen.CollectedDataScreen.route) {
-                        Button(onClick = {
-                            multiplePermissionResultLauncher.launch(viewModel.permissionsToRequest)
-                        }) {
-                            Text(text = "Request multiple permission")
-                        }
+                        CollectedDataScreen(navController = navController)
 
-                        viewModel.visiblePermissionDialogQueue
-                            .reversed()
-                            .forEach { permission ->
-                                PermissionDialog(
-                                    permissionTextProvider = when (permission) {
-                                        Manifest.permission.ACCESS_FINE_LOCATION -> {
-                                            GpsPermissionTextProvider()
-                                        }
-                                        Manifest.permission.READ_CALL_LOG -> {
-                                            PhoneCallLogPermissionTextProvider()
-                                        }
-                                        else -> return@forEach
-                                    },
-                                    isPermanentlyDeclined = !shouldShowRequestPermissionRationale(permission),
-                                    onDismiss = viewModel::dismissDialog,
-                                    onOkClick = {
-                                        viewModel.dismissDialog()
-                                        multiplePermissionResultLauncher.launch(
-                                            arrayOf(permission)
-                                        )
-                                    },
-                                    onGoToAppSettingsClick = ::openAppSettings
-                                )
-                            }
+//                        Button(onClick = {
+//                            multiplePermissionResultLauncher.launch(viewModel.permissionsToRequest)
+//                        }) {
+//                            Text(text = "Request multiple permission")
+//                        }
+//
+//                        viewModel.visiblePermissionDialogQueue
+//                            .reversed()
+//                            .forEach { permission ->
+//                                PermissionDialog(
+//                                    permissionTextProvider = when (permission) {
+//                                        Manifest.permission.ACCESS_FINE_LOCATION -> {
+//                                            GpsPermissionTextProvider()
+//                                        }
+//                                        Manifest.permission.READ_CALL_LOG -> {
+//                                            PhoneCallLogPermissionTextProvider()
+//                                        }
+//                                        else -> return@forEach
+//                                    },
+//                                    isPermanentlyDeclined = !shouldShowRequestPermissionRationale(permission),
+//                                    onDismiss = viewModel::dismissDialog,
+//                                    onOkClick = {
+//                                        viewModel.dismissDialog()
+//                                        multiplePermissionResultLauncher.launch(
+//                                            arrayOf(permission)
+//                                        )
+//                                    },
+//                                    onGoToAppSettingsClick = ::openAppSettings
+//                                )
+//                            }
 //                        Column(
 //                            modifier = Modifier
 //                                .fillMaxSize()

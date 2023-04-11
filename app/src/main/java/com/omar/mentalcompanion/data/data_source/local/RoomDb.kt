@@ -9,7 +9,7 @@ import com.omar.mentalcompanion.data.entities.ApplicationUsage
 import com.omar.mentalcompanion.data.entities.Location
 import com.omar.mentalcompanion.data.entities.MetaData
 
-@Database(entities = [Location::class, ApplicationUsage::class, MetaData::class], version = 3)
+@Database(entities = [Location::class, ApplicationUsage::class, MetaData::class], version = 4)
 abstract class RoomDb : RoomDatabase() {
 
     abstract fun locationDao(): LocationDao

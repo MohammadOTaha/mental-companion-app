@@ -14,4 +14,7 @@ interface ApplicationUsageDao {
 
     @Query("SELECT * FROM applications_usage")
     fun getAllApplicationsUsage(): Flow<List<ApplicationUsage>>
+
+    @Query("SELECT * FROM applications_usage WHERE created_at >= date('now', 'start of day')")
+    fun getTodayApplicationsUsage(): Flow<List<ApplicationUsage>>
 }

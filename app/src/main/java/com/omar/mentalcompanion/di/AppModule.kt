@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.google.firebase.firestore.FirebaseFirestore
 import com.omar.mentalcompanion.AppViewModel
 import com.omar.mentalcompanion.data.data_source.local.RoomDb
+import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.domain.repositories.ApplicationUsageRepository
 import com.omar.mentalcompanion.domain.repositories.LocationRepository
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
@@ -72,5 +73,11 @@ object AppModule {
     @Singleton
     fun provideAppViewModel(app: Application, usageStatsData: UsageStatsData, locationLiveData: LocationLiveData): AppViewModel {
         return AppViewModel(app, usageStatsData, locationLiveData)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncService(applicationUsageRepository: ApplicationUsageRepository): SyncService {
+        return SyncService(applicationUsageRepository)
     }
 }

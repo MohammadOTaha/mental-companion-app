@@ -16,4 +16,6 @@ class ApplicationUsageRepository(
     }
 
     fun getAllApplicationsUsage() = applicationUsageDao.getAllApplicationsUsage()
+
+    fun getTodayApplicationsUsage() = applicationUsageDao.getTodayApplicationsUsage()
 }

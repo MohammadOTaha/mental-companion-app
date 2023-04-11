@@ -73,8 +73,20 @@ class MainViewModel @Inject constructor(
             if (daysSinceLastQuestionnaire >= 7) {
                 ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0")
             } else {
-                ActiveScreen.CollectedDataScreen.route
+//                ActiveScreen.CollectedDataScreen.route
+                ActiveScreen.WelcomeScreen.route
             }
+        }
+    }
+
+    fun getTimeUntilNextQuestionnaire(): Int {
+        return runBlocking {
+            val lastQuestionnaireDate = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE) }
+            val today = LocalDate.now()
+            val lastQuestionnaireDateParsed = LocalDate.parse(lastQuestionnaireDate.await())
+            val daysSinceLastQuestionnaire = Period.between(lastQuestionnaireDateParsed, today).days
+
+            7 - daysSinceLastQuestionnaire
         }
     }
 }

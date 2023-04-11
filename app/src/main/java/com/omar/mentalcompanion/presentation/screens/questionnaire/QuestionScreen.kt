@@ -100,7 +100,7 @@ private fun Question(
                                 viewModel.onEvent(QuestionnaireEvent.NextQuestion)
                             } else {
                                 viewModel.onEvent(QuestionnaireEvent.FinishQuestionnaire)
-                                navController.navigate(ActiveScreen.CollectedDataScreen.route)
+                                navController.navigate(ActiveScreen.WelcomeScreen.route)
                             }
                         },
                         modifier = Modifier

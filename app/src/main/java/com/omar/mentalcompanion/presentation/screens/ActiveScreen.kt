@@ -5,7 +5,11 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 sealed class ActiveScreen(val route: String, val args: List<NamedNavArgument> = emptyList()) {
+
+    object WelcomeScreen: ActiveScreen("welcome_screen")
+
     object CollectedDataScreen: ActiveScreen("collected_data_screen")
+
     object QuestionnaireScreen: ActiveScreen("questionnaire_screen", listOf(
         navArgument("questionNumber") {
             type = NavType.IntType

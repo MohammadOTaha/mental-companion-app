@@ -31,6 +31,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.omar.mentalcompanion.domain.workers.QuestionnaireNotificationWorker
+import com.omar.mentalcompanion.presentation.screens.welcome.WelcomeScreen
 import java.util.concurrent.TimeUnit
 
 
@@ -77,13 +78,15 @@ class MainActivity : ComponentActivity() {
                     }
                 )
 
-                Log.d("123", viewModel.getStartDestination())
-
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
                     startDestination = viewModel.getStartDestination()
                 ) {
+                    composable(route = ActiveScreen.WelcomeScreen.route) {
+                        WelcomeScreen(navController = navController)
+                    }
+
                     composable(route = ActiveScreen.CollectedDataScreen.route) {
                         Button(onClick = {
                             multiplePermissionResultLauncher.launch(viewModel.permissionsToRequest)

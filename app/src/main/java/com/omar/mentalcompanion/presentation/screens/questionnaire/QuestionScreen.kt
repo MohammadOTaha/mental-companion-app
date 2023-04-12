@@ -1,5 +1,10 @@
 package com.omar.mentalcompanion.presentation.screens.questionnaire
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -20,12 +25,13 @@ import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.Answers
 import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.CommonComponents.ResponsiveText
 import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.Questions
 import com.omar.mentalcompanion.presentation.screens.questionnaire.viewmodels.QuestionnaireViewModel
+import com.omar.mentalcompanion.presentation.utils.Constants.CONTENT_ANIMATION_DURATION
 
 
 @Composable
 fun QuestionScreen(
     viewModel: QuestionnaireViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     Column(
         modifier = Modifier
@@ -33,10 +39,25 @@ fun QuestionScreen(
             .background(Color(0xFFBDF384)),
         verticalArrangement = if (viewModel.getQuestionNumber() == 0) Arrangement.Center else Arrangement.Top
     ) {
-        if (viewModel.getQuestionNumber() == 0) {
-            HeaderQuestion(viewModel)
-        } else {
-            Question(viewModel.getQuestionNumber(), viewModel, navController)
+        AnimatedContent(
+            targetState = viewModel.getQuestionNumber(),
+            transitionSpec = {
+                slideInHorizontally(
+                    animationSpec = tween(CONTENT_ANIMATION_DURATION),
+                    initialOffsetX = { fullWidth -> fullWidth }
+                ).with(
+                    slideOutHorizontally(
+                        animationSpec = tween(CONTENT_ANIMATION_DURATION),
+                        targetOffsetX = { fullWidth -> -fullWidth }
+                    )
+                )
+            }
+        ) { questionNumber ->
+            if (questionNumber == 0) {
+                HeaderQuestion(viewModel)
+            } else {
+                Question(questionNumber, viewModel, navController)
+            }
         }
     }
 }
@@ -94,13 +115,18 @@ private fun Question(
                 Answers.getAll().forEach { answer ->
                     TextButton(
                         onClick = {
-                            viewModel.onEvent(QuestionnaireEvent.SelectAnswer(questionNumber, Answers.getAll().indexOf(answer)))
+                            viewModel.onEvent(
+                                QuestionnaireEvent.SelectAnswer(
+                                    questionNumber,
+                                    Answers.getAll().indexOf(answer)
+                                )
+                            )
 
                             if (questionNumber < 9) {
                                 viewModel.onEvent(QuestionnaireEvent.NextQuestion)
                             } else {
                                 viewModel.onEvent(QuestionnaireEvent.FinishQuestionnaire)
-                                navController.navigate(ActiveScreen.WelcomeScreen.route)
+                                navController.navigate(ActiveScreen.WelcomeBackScreen.route)
                             }
                         },
                         modifier = Modifier

@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.presentation.screens.welcome
+package com.omar.mentalcompanion.presentation.screens.welcome_back
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

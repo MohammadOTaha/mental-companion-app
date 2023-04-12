@@ -73,8 +73,7 @@ class MainViewModel @Inject constructor(
             if (daysSinceLastQuestionnaire >= 7) {
                 ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0")
             } else {
-//                ActiveScreen.CollectedDataScreen.route
-                ActiveScreen.WelcomeScreen.route
+                ActiveScreen.WelcomeBackScreen.route
             }
         }
     }

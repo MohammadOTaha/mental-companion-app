@@ -11,29 +11,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.core.app.ActivityCompat
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import com.omar.mentalcompanion.presentation.screens.questionnaire.QuestionScreen
 import dagger.hilt.android.AndroidEntryPoint
 import android.provider.Settings
 import android.net.Uri
-import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.work.*
 import com.omar.mentalcompanion.data.services.SyncService
-import com.omar.mentalcompanion.domain.workers.QuestionnaireNotificationWorker
-import com.omar.mentalcompanion.domain.workers.SyncDataWorker
 import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
-import com.omar.mentalcompanion.presentation.screens.welcome.WelcomeScreen
-import java.util.concurrent.TimeUnit
+import com.omar.mentalcompanion.presentation.screens.welcome_back.WelcomeScreen
 import javax.inject.Inject
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.navigation
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 
 @AndroidEntryPoint
@@ -41,6 +36,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var syncService: SyncService
 
+    @OptIn(ExperimentalAnimationApi::class)
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,12 +61,12 @@ class MainActivity : ComponentActivity() {
                     }
                 )
 
-                val navController = rememberNavController()
-                NavHost(
+                val navController = rememberAnimatedNavController()
+                AnimatedNavHost(
                     navController = navController,
                     startDestination = viewModel.getStartDestination()
                 ) {
-                    composable(route = ActiveScreen.WelcomeScreen.route) {
+                    composable(route = ActiveScreen.WelcomeBackScreen.route) {
                         WelcomeScreen(navController = navController)
                     }
 

@@ -26,12 +26,10 @@ import android.provider.Settings
 import android.net.Uri
 import android.util.Log
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.domain.workers.QuestionnaireNotificationWorker
+import com.omar.mentalcompanion.domain.workers.SyncDataWorker
 import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
 import com.omar.mentalcompanion.presentation.screens.welcome.WelcomeScreen
 import java.util.concurrent.TimeUnit
@@ -48,23 +46,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestPermissions()
-
-        val questionnaireNotificationWorker =
-            PeriodicWorkRequestBuilder<QuestionnaireNotificationWorker>(
-                20,
-                TimeUnit.MINUTES
-            ).setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            ).build()
-        val workManager = WorkManager.getInstance(applicationContext)
-
-        workManager.enqueueUniquePeriodicWork(
-            "QuestionnaireNotificationWorker",
-            androidx.work.ExistingPeriodicWorkPolicy.KEEP,
-            questionnaireNotificationWorker
-        )
 
         setContent {
             MentalCompanionTheme {

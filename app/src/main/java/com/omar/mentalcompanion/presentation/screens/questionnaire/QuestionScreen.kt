@@ -42,15 +42,27 @@ fun QuestionScreen(
         AnimatedContent(
             targetState = viewModel.getQuestionNumber(),
             transitionSpec = {
-                slideInHorizontally(
-                    animationSpec = tween(CONTENT_ANIMATION_DURATION),
-                    initialOffsetX = { fullWidth -> fullWidth }
-                ).with(
-                    slideOutHorizontally(
+                if (initialState < targetState) {
+                    slideInHorizontally(
                         animationSpec = tween(CONTENT_ANIMATION_DURATION),
-                        targetOffsetX = { fullWidth -> -fullWidth }
+                        initialOffsetX = { fullWidth -> fullWidth }
+                    ).with(
+                        slideOutHorizontally(
+                            animationSpec = tween(CONTENT_ANIMATION_DURATION),
+                            targetOffsetX = { fullWidth -> -fullWidth }
+                        )
                     )
-                )
+                } else {
+                    slideInHorizontally(
+                        animationSpec = tween(CONTENT_ANIMATION_DURATION),
+                        initialOffsetX = { fullWidth -> -fullWidth }
+                    ).with(
+                        slideOutHorizontally(
+                            animationSpec = tween(CONTENT_ANIMATION_DURATION),
+                            targetOffsetX = { fullWidth -> fullWidth }
+                        )
+                    )
+                }
             }
         ) { questionNumber ->
             if (questionNumber == 0) {

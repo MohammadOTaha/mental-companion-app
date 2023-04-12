@@ -29,6 +29,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.omar.mentalcompanion.presentation.screens.introduction.IntroductionScreen
 
 
 @AndroidEntryPoint
@@ -64,8 +65,12 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberAnimatedNavController()
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = viewModel.getStartDestination()
+                    startDestination = ActiveScreen.IntroductionScreen.route
                 ) {
+                    composable(route = ActiveScreen.IntroductionScreen.route) {
+                        IntroductionScreen(navController = navController)
+                    }
+
                     composable(route = ActiveScreen.WelcomeBackScreen.route) {
                         WelcomeScreen(navController = navController)
                     }

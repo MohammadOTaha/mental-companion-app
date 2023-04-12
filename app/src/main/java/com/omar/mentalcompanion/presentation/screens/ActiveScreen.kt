@@ -6,6 +6,8 @@ import androidx.navigation.navArgument
 
 sealed class ActiveScreen(val route: String, val args: List<NamedNavArgument> = emptyList()) {
 
+    object IntroductionScreen: ActiveScreen("introduction_screen")
+
     object WelcomeBackScreen: ActiveScreen("welcome_screen")
 
     object CollectedDataScreen: ActiveScreen("collected_data_screen")

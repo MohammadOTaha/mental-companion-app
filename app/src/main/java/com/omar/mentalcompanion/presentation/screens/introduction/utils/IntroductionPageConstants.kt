@@ -4,7 +4,7 @@ class IntroductionPageConstants {
     companion object {
         const val PAGES_COUNT = 8
 
-        private const val P0_TEXT = "Welcome to Mental Companion!"
+        private const val P0_TEXT = "Welcome to \nMental Companion!"
 
         private const val P1_TEXT = "This app will help you to keep track of your mental health.\n\n" +
                 "It will monitor your daily activities and detect any changes in your mood.\n\n"

@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberAnimatedNavController()
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = ActiveScreen.IntroductionScreen.route
+                    startDestination = viewModel.getStartDestination()
                 ) {
                     composable(route = ActiveScreen.IntroductionScreen.route) {
                         IntroductionScreen(navController = navController)

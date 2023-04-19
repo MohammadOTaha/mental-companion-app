@@ -1,6 +1,7 @@
 package com.omar.mentalcompanion.presentation
 
 import android.Manifest
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -59,21 +60,33 @@ class MainViewModel @Inject constructor(
                         value = MetaDataValues.NO_SCORE
                     )
                 )
+
+                metaDataRepository.upsertMetaData(
+                    MetaData(
+                        key = MetaDataKeys.INTRODUCTION_COMPLETED,
+                        value = MetaDataValues.FALSE
+                    )
+                )
             }
         }
     }
 
     fun getStartDestination(): String {
         return runBlocking {
+            val introductionCompleted = async { metaDataRepository.getMetaDataValue(MetaDataKeys.INTRODUCTION_COMPLETED) }
+            if (introductionCompleted.await() == MetaDataValues.FALSE) {
+                return@runBlocking ActiveScreen.IntroductionScreen.route
+            }
+
             val lastQuestionnaireDate = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE) }
             val today = LocalDate.now()
             val lastQuestionnaireDateParsed = LocalDate.parse(lastQuestionnaireDate.await())
             val daysSinceLastQuestionnaire = Period.between(lastQuestionnaireDateParsed, today).days
 
             if (daysSinceLastQuestionnaire >= 7) {
-                ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0")
+                return@runBlocking ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0")
             } else {
-                ActiveScreen.WelcomeBackScreen.route
+                return@runBlocking ActiveScreen.WelcomeBackScreen.route
             }
         }
     }

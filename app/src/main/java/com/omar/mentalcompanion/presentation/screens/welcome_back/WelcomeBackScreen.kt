@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.omar.mentalcompanion.presentation.MainViewModel
@@ -26,23 +27,36 @@ fun WelcomeScreen(
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // empty element to push the text to the bottom
         Spacer(modifier = Modifier)
 
-        Text(
-            text = "Hello!\nYour next questionnaire is in: ${mainViewModel.getTimeUntilNextQuestionnaire()} days.",
-            textAlign = TextAlign.Center,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .align(Alignment.CenterHorizontally),
-            color = MaterialTheme.colorScheme.onBackground
-        )
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                text = "Hello!\nYour next questionnaire is in: ${mainViewModel.getTimeUntilNextQuestionnaire()} days.",
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.CenterHorizontally),
+                color = MaterialTheme.colorScheme.onBackground
+            )
 
-        Button(onClick = {
-            navController.navigate(ActiveScreen.CollectedDataScreen.route)
-        }) {
-            Text(text = "Continue")
+            // divider
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "The application is running in the background.",
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.CenterHorizontally),
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
 
         Text(

@@ -18,6 +18,7 @@ import com.omar.mentalcompanion.presentation.utils.Constants
 import androidx.compose.material3.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
@@ -94,7 +95,12 @@ private fun Page(
                 .padding(start = 100.dp, end = 100.dp),
             shape = MaterialTheme.shapes.small,
         ) {
-            Text(text = "Allow", color = MaterialTheme.colorScheme.onPrimary)
+            Text(
+                text = "Allow",
+                modifier = Modifier,
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 20.sp
+            )
         }
 
         Row(
@@ -125,7 +131,7 @@ private fun Page(
                 onClick = {
                     if (viewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
                         viewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
-                        navController.navigate(ActiveScreen.WelcomeBackScreen.route)
+                        navController.navigate(ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0"))
                     } else {
                         viewModel.onEvent(IntroductionPageEvent.NextPage)
                     }

@@ -32,7 +32,7 @@ fun IntroductionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFBDF384))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         AnimatedContent(
             targetState = viewModel.getPage(),
@@ -72,16 +72,16 @@ private fun Page(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFBDF384)),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(modifier = Modifier)
 
         Text(
             text = IntroductionPageConstants.getPageText(viewModel.getPage()),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -94,7 +94,7 @@ private fun Page(
                 .padding(start = 100.dp, end = 100.dp),
             shape = MaterialTheme.shapes.small,
         ) {
-            Text(text = "Allow")
+            Text(text = "Allow", color = MaterialTheme.colorScheme.onPrimary)
         }
 
         Row(
@@ -113,7 +113,8 @@ private fun Page(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             } else {
@@ -134,7 +135,8 @@ private fun Page(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowForward,
-                    contentDescription = "Next"
+                    contentDescription = "Next",
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         }

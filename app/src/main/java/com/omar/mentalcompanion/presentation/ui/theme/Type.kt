@@ -25,6 +25,13 @@ val Typography = Typography(
         lineHeight = 32.sp,
         letterSpacing = 0.5.sp
     ),
+    labelLarge = TextStyle(
+        fontFamily = InterTight,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 28.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.5.sp
+    ),
     titleLarge = TextStyle(
         fontFamily = InterTight,
         fontWeight = FontWeight.Black,

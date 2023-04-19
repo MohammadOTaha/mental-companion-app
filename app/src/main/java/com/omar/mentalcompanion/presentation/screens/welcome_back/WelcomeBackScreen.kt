@@ -35,7 +35,8 @@ fun WelcomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .align(Alignment.CenterHorizontally)
+                .align(Alignment.CenterHorizontally),
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Button(onClick = {
@@ -51,7 +52,8 @@ fun WelcomeScreen(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .align(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSecondary
         )
     }
 }

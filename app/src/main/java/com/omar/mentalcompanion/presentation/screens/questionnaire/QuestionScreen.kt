@@ -36,7 +36,7 @@ fun QuestionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFBDF384)),
+            .background(MaterialTheme.colorScheme.background),
         verticalArrangement = if (viewModel.getQuestionNumber() == 0) Arrangement.Center else Arrangement.Top
     ) {
         AnimatedContent(
@@ -69,6 +69,7 @@ fun QuestionScreen(
                 HeaderQuestion(viewModel)
             } else {
                 Question(questionNumber, viewModel, navController)
+                Answers(questionNumber, viewModel, navController)
             }
         }
     }
@@ -78,10 +79,11 @@ fun QuestionScreen(
 private fun HeaderQuestion(
     viewModel: QuestionnaireViewModel
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(24.dp)) {
         Text(
             text = Questions.get(0),
             style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
         ExtendedFloatingActionButton(
@@ -108,22 +110,36 @@ private fun Question(
     navController: NavController
 ) {
     Column(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(32.dp),
     ) {
         ResponsiveText(
             text = Questions.get(questionNumber),
             style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground,
             maxLines = 10
         )
+    }
+}
 
-        Column(
+@Composable
+private fun Answers(
+    questionNumber: Int,
+    viewModel: QuestionnaireViewModel,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 24.dp, start = 24.dp, end = 24.dp),
+        verticalArrangement = Arrangement.Bottom,
+    ) {
+        Surface(
             modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
+                .fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.primaryContainer,
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+            Column {
                 Answers.getAll().forEach { answer ->
                     TextButton(
                         onClick = {
@@ -141,46 +157,52 @@ private fun Question(
                                 navController.navigate(ActiveScreen.WelcomeBackScreen.route)
                             }
                         },
-                        modifier = Modifier
-                            .padding(start = 0.dp),
                     ) {
                         Text(
                             text = answer,
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Start,
-                            color = Color(0xFF000000),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    if (answer != Answers.getAll().last()) {
+                        Divider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12f),
+                            thickness = 1.dp
                         )
                     }
                 }
             }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        viewModel.onEvent(QuestionnaireEvent.PreviousQuestion)
-                    },
-                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-                    containerColor = Color.Transparent,
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-
-                Text(
-                    text = "$questionNumber/9",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF000000),
-                )
-            }
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    viewModel.onEvent(QuestionnaireEvent.PreviousQuestion)
+                },
+                elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+                containerColor = Color.Transparent,
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            Text(
+                text = "$questionNumber/9",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
     }
 }

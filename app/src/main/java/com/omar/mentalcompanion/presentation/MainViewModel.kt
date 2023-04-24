@@ -104,7 +104,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun scheduleReminderNotification(hourOfDay: Int, minute: Int, title: String, content: String) {
+    fun scheduleReminderNotification(
+        hourOfDay: Int,
+        minute: Int,
+        title: String,
+        content: String
+    ) {
         notificationSchedulerService.scheduleReminderNotification(hourOfDay, minute, title, content)
     }
 }

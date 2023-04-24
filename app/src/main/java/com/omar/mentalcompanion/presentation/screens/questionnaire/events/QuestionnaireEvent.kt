@@ -5,4 +5,5 @@ sealed class QuestionnaireEvent {
     object PreviousQuestion : QuestionnaireEvent()
     object FinishQuestionnaire : QuestionnaireEvent()
     data class SelectAnswer(val questionNumber: Int, val answerNumber: Int) : QuestionnaireEvent()
+    data class SelectSleepHours(val hours: Int) : QuestionnaireEvent()
 }

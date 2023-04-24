@@ -60,6 +60,16 @@ class QuestionnaireViewModel @Inject constructor(
                     )
                 }
             }
+            is QuestionnaireEvent.SelectSleepHours -> {
+                runBlocking {
+                    metaDataRepository.upsertMetaData(
+                        MetaData(
+                            key = MetaDataKeys.LAST_SLEEP_HOURS,
+                            value = event.hours.toString()
+                        )
+                    )
+                }
+            }
         }
     }
 }

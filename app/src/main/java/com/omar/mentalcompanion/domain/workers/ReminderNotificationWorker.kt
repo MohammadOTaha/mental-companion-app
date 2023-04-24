@@ -12,7 +12,6 @@ class ReminderNotificationWorker(
 ) : Worker(context, params) {
 
     override fun doWork(): Result {
-        // receive data from inputData
         NotificationService.createNotification(
             context,
             inputData.getString("title")!!,

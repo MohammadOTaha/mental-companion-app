@@ -16,6 +16,7 @@ object MetaDataKeys {
     const val LAST_QUESTIONNAIRE_DATE = "last_questionnaire_date"
     const val LAST_QUESTIONNAIRE_SCORE = "last_questionnaire_score"
     const val INTRODUCTION_COMPLETED = "introduction_completed"
+    const val LAST_SLEEP_HOURS = "last_sleep_hours"
 }
 
 object MetaDataValues {

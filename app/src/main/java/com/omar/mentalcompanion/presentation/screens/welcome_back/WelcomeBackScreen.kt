@@ -2,7 +2,6 @@ package com.omar.mentalcompanion.presentation.screens.welcome_back
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.omar.mentalcompanion.presentation.MainViewModel
-import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 
 @Composable
 fun WelcomeScreen(
@@ -57,12 +55,6 @@ fun WelcomeScreen(
                     .align(Alignment.CenterHorizontally),
                 color = MaterialTheme.colorScheme.onBackground
             )
-
-            Button(onClick = {
-                mainViewModel.scheduleReminderNotification(16, 25, "Test notification", "This is a test notification")
-            }) {
-                Text(text = "Notify!")
-            }
         }
 
         Text(

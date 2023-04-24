@@ -58,7 +58,7 @@ fun CollectedDataScreen (
                 }
 
                 Button(onClick = {
-                    navController.navigate(ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0"))
+                    navController.navigate(ActiveScreen.QuestionnaireScreen.route)
                 }) {
                     Text(text = "Go to Questionnaire")
                 }

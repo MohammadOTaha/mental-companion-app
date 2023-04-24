@@ -20,6 +20,8 @@ import android.provider.Settings
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.work.*
 import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
@@ -27,8 +29,8 @@ import com.omar.mentalcompanion.presentation.screens.welcome_back.WelcomeScreen
 import javax.inject.Inject
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.omar.mentalcompanion.domain.utils.*
 import com.omar.mentalcompanion.presentation.screens.introduction.IntroductionScreen
 
 
@@ -46,15 +48,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MentalCompanionTheme {
-                val viewModel = hiltViewModel<MainViewModel>()
+                val mainViewModel = hiltViewModel<MainViewModel>()
 
-                init(viewModel)
+                init(mainViewModel)
 
                 val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestMultiplePermissions(),
                     onResult = { perms ->
-                        viewModel.permissionsToRequest.forEach { permission ->
-                            viewModel.onPermissionResult(
+                        mainViewModel.permissionsToRequest.forEach { permission ->
+                            mainViewModel.onPermissionResult(
                                 permission = permission,
                                 isGranted = perms[permission] == true
                             )
@@ -65,7 +67,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberAnimatedNavController()
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = viewModel.getStartDestination()
+                    startDestination = mainViewModel.getDestination()
                 ) {
                     composable(route = ActiveScreen.IntroductionScreen.route) {
                         IntroductionScreen(navController = navController)
@@ -77,82 +79,19 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = ActiveScreen.CollectedDataScreen.route) {
                         CollectedDataScreen(navController = navController)
-
-//                        Button(onClick = {
-//                            multiplePermissionResultLauncher.launch(viewModel.permissionsToRequest)
-//                        }) {
-//                            Text(text = "Request multiple permission")
-//                        }
-//
-//                        viewModel.visiblePermissionDialogQueue
-//                            .reversed()
-//                            .forEach { permission ->
-//                                PermissionDialog(
-//                                    permissionTextProvider = when (permission) {
-//                                        Manifest.permission.ACCESS_FINE_LOCATION -> {
-//                                            GpsPermissionTextProvider()
-//                                        }
-//                                        Manifest.permission.READ_CALL_LOG -> {
-//                                            PhoneCallLogPermissionTextProvider()
-//                                        }
-//                                        else -> return@forEach
-//                                    },
-//                                    isPermanentlyDeclined = !shouldShowRequestPermissionRationale(permission),
-//                                    onDismiss = viewModel::dismissDialog,
-//                                    onOkClick = {
-//                                        viewModel.dismissDialog()
-//                                        multiplePermissionResultLauncher.launch(
-//                                            arrayOf(permission)
-//                                        )
-//                                    },
-//                                    onGoToAppSettingsClick = ::openAppSettings
-//                                )
-//                            }
-//                        Column(
-//                            modifier = Modifier
-//                                .fillMaxSize()
-//                                .background(MaterialTheme.colorScheme.background),
-//                            verticalArrangement = Arrangement.spacedBy(16.dp)
-//                        ) {
-//                            Row(
-//                                modifier = Modifier.fillMaxWidth(),
-//                                horizontalArrangement = Arrangement.SpaceAround
-//                            ) {
-//                                Button(onClick = {
-//                                    Intent(
-//                                        applicationContext,
-//                                        BackgroundService::class.java
-//                                    ).apply {
-//                                        action = BackgroundService.ACTION_START
-//                                        startService(this)
-//                                    }
-//                                }) {
-//                                    Text(text = "Start Service")
-//                                }
-//
-//                                Button(onClick = {
-//                                    Intent(
-//                                        applicationContext,
-//                                        BackgroundService::class.java
-//                                    ).apply {
-//                                        action = BackgroundService.ACTION_STOP
-//                                        startService(this)
-//                                    }
-//                                }) {
-//                                    Text(text = "Stop Service")
-//                                }
-//                            }
-//
-//                            CollectedDataScreen(navController = navController)
-//                        }
                     }
 
-                    composable(
-                        route = ActiveScreen.QuestionnaireScreen.route + "/{questionNumber}",
-                        arguments = ActiveScreen.QuestionnaireScreen.args
-                    ) {
+                    composable(route = ActiveScreen.QuestionnaireScreen.route) {
                         QuestionScreen(
                             navController = navController,
+                            questionNumber = 0
+                        )
+                    }
+
+                    composable(route = ActiveScreen.SleepQuestionScreen.route) {
+                        QuestionScreen(
+                            navController = navController,
+                            questionNumber = 10
                         )
                     }
                 }
@@ -162,6 +101,20 @@ class MainActivity : ComponentActivity() {
 
     private fun init(viewModel: MainViewModel) {
         viewModel.initMetaData()
+
+        viewModel.scheduleReminderNotification(
+            SLEEP_QUESTION_HOUR,
+            SLEEP_QUESTION_MINUTE,
+            NOTIFICATION_TITLE,
+            SLEEP_QUESTION_CONTENT
+        )
+
+        viewModel.scheduleReminderNotification(
+            QUESTIONNAIRE_REMINDER_HOUR,
+            QUESTIONNAIRE_REMINDER_MINUTE,
+            NOTIFICATION_TITLE,
+            QUESTIONNAIRE_REMINDER_CONTENT
+        )
     }
 
     private fun requestPermissions() {

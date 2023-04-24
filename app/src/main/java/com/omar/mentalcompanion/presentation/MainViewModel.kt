@@ -4,7 +4,6 @@ import android.Manifest
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.omar.mentalcompanion.data.entities.MetaData
 import com.omar.mentalcompanion.data.entities.MetaDataKeys
 import com.omar.mentalcompanion.data.entities.MetaDataValues
@@ -13,10 +12,10 @@ import com.omar.mentalcompanion.domain.services.NotificationSchedulerService
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.Period
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -69,11 +68,18 @@ class MainViewModel @Inject constructor(
                         value = MetaDataValues.FALSE
                     )
                 )
+
+                metaDataRepository.upsertMetaData(
+                    MetaData(
+                        key = MetaDataKeys.LAST_SLEEP_HOURS,
+                        value = MetaDataValues.NO_SCORE
+                    )
+                )
             }
         }
     }
 
-    fun getStartDestination(): String {
+    fun getDestination(): String {
         return runBlocking {
             val introductionCompleted = async { metaDataRepository.getMetaDataValue(MetaDataKeys.INTRODUCTION_COMPLETED) }
             if (introductionCompleted.await() == MetaDataValues.FALSE) {
@@ -86,8 +92,15 @@ class MainViewModel @Inject constructor(
             val daysSinceLastQuestionnaire = Period.between(lastQuestionnaireDateParsed, today).days
 
             if (daysSinceLastQuestionnaire >= 7) {
-                return@runBlocking ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0")
+                return@runBlocking ActiveScreen.QuestionnaireScreen.route
             } else {
+                val lastSleepHours = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_SLEEP_HOURS) }
+                if (lastSleepHours.await() == MetaDataValues.NO_SCORE &&
+                    Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 12
+                ) {
+                    return@runBlocking ActiveScreen.SleepQuestionScreen.route
+                }
+
                 return@runBlocking ActiveScreen.WelcomeBackScreen.route
             }
         }

@@ -1,5 +1,6 @@
 package com.omar.mentalcompanion.presentation.screens.questionnaire
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.omar.mentalcompanion.presentation.MainViewModel
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import com.omar.mentalcompanion.presentation.screens.questionnaire.events.QuestionnaireEvent
 import com.omar.mentalcompanion.presentation.screens.questionnaire.utils.Answers
@@ -39,48 +41,54 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun QuestionScreen(
-    viewModel: QuestionnaireViewModel = hiltViewModel(),
+    questionnaireViewModel: QuestionnaireViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     navController: NavController,
+    questionNumber: Int
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = if (viewModel.getQuestionNumber() == 0) Arrangement.Center else Arrangement.Top
+        verticalArrangement = if (questionnaireViewModel.getQuestionNumber() == 0) Arrangement.Center else Arrangement.Top
     ) {
-        AnimatedContent(
-            targetState = viewModel.getQuestionNumber(),
-            transitionSpec = {
-                if (initialState < targetState) {
-                    slideInHorizontally(
-                        animationSpec = tween(CONTENT_ANIMATION_DURATION),
-                        initialOffsetX = { fullWidth -> fullWidth }
-                    ).with(
-                        slideOutHorizontally(
+        if (questionNumber == 10) {
+            SleepHoursQuestion(navController = navController, viewModel = questionnaireViewModel)
+        } else {
+            AnimatedContent(
+                targetState = questionnaireViewModel.getQuestionNumber(),
+                transitionSpec = {
+                    if (initialState < targetState) {
+                        slideInHorizontally(
                             animationSpec = tween(CONTENT_ANIMATION_DURATION),
-                            targetOffsetX = { fullWidth -> -fullWidth }
+                            initialOffsetX = { fullWidth -> fullWidth }
+                        ).with(
+                            slideOutHorizontally(
+                                animationSpec = tween(CONTENT_ANIMATION_DURATION),
+                                targetOffsetX = { fullWidth -> -fullWidth }
+                            )
                         )
-                    )
-                } else {
-                    slideInHorizontally(
-                        animationSpec = tween(CONTENT_ANIMATION_DURATION),
-                        initialOffsetX = { fullWidth -> -fullWidth }
-                    ).with(
-                        slideOutHorizontally(
+                    } else {
+                        slideInHorizontally(
                             animationSpec = tween(CONTENT_ANIMATION_DURATION),
-                            targetOffsetX = { fullWidth -> fullWidth }
+                            initialOffsetX = { fullWidth -> -fullWidth }
+                        ).with(
+                            slideOutHorizontally(
+                                animationSpec = tween(CONTENT_ANIMATION_DURATION),
+                                targetOffsetX = { fullWidth -> fullWidth }
+                            )
                         )
-                    )
+                    }
                 }
-            }
-        ) { questionNumber ->
-            if (questionNumber == 0) {
-                HeaderQuestion(viewModel)
-            } else if (questionNumber <= 9) {
-                QuestionnaireQuestion(questionNumber)
-                QuestionnaireAnswers(questionNumber, viewModel, navController)
-            } else {
-                SleepHoursQuestion(navController = navController, viewModel = viewModel)
+            ) { questionNumber ->
+                if (questionNumber == 0) {
+                    HeaderQuestion(questionnaireViewModel)
+                } else if (questionNumber <= 9) {
+                    QuestionnaireQuestion(questionNumber)
+                    QuestionnaireAnswers(questionNumber, questionnaireViewModel, mainViewModel, navController)
+                } else {
+                    SleepHoursQuestion(navController = navController, viewModel = questionnaireViewModel)
+                }
             }
         }
     }
@@ -133,7 +141,8 @@ private fun QuestionnaireQuestion(
 @Composable
 private fun QuestionnaireAnswers(
     questionNumber: Int,
-    viewModel: QuestionnaireViewModel,
+    questionnaireViewModel: QuestionnaireViewModel,
+    mainViewModel: MainViewModel,
     navController: NavController
 ) {
     Column(
@@ -152,7 +161,7 @@ private fun QuestionnaireAnswers(
                 Answers.getAll().forEach { answer ->
                     TextButton(
                         onClick = {
-                            viewModel.onEvent(
+                            questionnaireViewModel.onEvent(
                                 QuestionnaireEvent.SelectAnswer(
                                     questionNumber,
                                     Answers.getAll().indexOf(answer)
@@ -160,10 +169,10 @@ private fun QuestionnaireAnswers(
                             )
 
                             if (questionNumber < 9) {
-                                viewModel.onEvent(QuestionnaireEvent.NextQuestion)
+                                questionnaireViewModel.onEvent(QuestionnaireEvent.NextQuestion)
                             } else {
-                                viewModel.onEvent(QuestionnaireEvent.FinishQuestionnaire)
-                                navController.navigate(ActiveScreen.WelcomeBackScreen.route)
+                                questionnaireViewModel.onEvent(QuestionnaireEvent.FinishQuestionnaire)
+                                navController.navigate(mainViewModel.getDestination())
                             }
                         },
                     ) {
@@ -195,7 +204,7 @@ private fun QuestionnaireAnswers(
         ) {
             ExtendedFloatingActionButton(
                 onClick = {
-                    viewModel.onEvent(QuestionnaireEvent.PreviousQuestion)
+                    questionnaireViewModel.onEvent(QuestionnaireEvent.PreviousQuestion)
                 },
                 elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
                 containerColor = Color.Transparent,

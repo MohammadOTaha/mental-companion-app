@@ -2,7 +2,6 @@ package com.omar.mentalcompanion.presentation.screens.introduction.viewmodels
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.omar.mentalcompanion.data.entities.MetaData
 import com.omar.mentalcompanion.data.entities.MetaDataKeys
 import com.omar.mentalcompanion.data.entities.MetaDataValues
@@ -10,7 +9,7 @@ import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.presentation.screens.introduction.events.IntroductionPageEvent
 import com.omar.mentalcompanion.presentation.screens.introduction.states.IntroductionState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +33,7 @@ class IntroductionViewModel @Inject constructor(
                 )
             }
             is IntroductionPageEvent.FinishIntroduction -> {
-                viewModelScope.launch {
+                runBlocking {
                     metaDataRepository.upsertMetaData(
                         MetaData(
                             key = MetaDataKeys.INTRODUCTION_COMPLETED,

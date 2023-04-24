@@ -22,7 +22,6 @@ class NotificationSchedulerService @Inject constructor(
      * @param minute the minute at which daily reminder notification should appear [0-59]
      */
     fun scheduleReminderNotification(hourOfDay: Int, minute: Int, title: String, content: String) {
-        Log.d("123", "Reminder scheduling request received for $hourOfDay:$minute")
         val now = Calendar.getInstance()
         val target = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, hourOfDay)
@@ -33,10 +32,8 @@ class NotificationSchedulerService @Inject constructor(
             target.add(Calendar.DAY_OF_YEAR, 1)
         }
 
-        Log.d("123", "Scheduling reminder notification for ${target.timeInMillis - System.currentTimeMillis()} ms from now")
-
         val notificationRequest = PeriodicWorkRequestBuilder<ReminderNotificationWorker>(24, TimeUnit.HOURS)
-            .addTag(WORKER_TAG)
+            .addTag(WORKER_TAG + content)
             .setInitialDelay(target.timeInMillis - System.currentTimeMillis(), TimeUnit.MILLISECONDS)
             .setInputData(
                 ReminderNotificationWorker.createInputData(
@@ -45,16 +42,13 @@ class NotificationSchedulerService @Inject constructor(
                 )
             )
             .build()
+
         WorkManager
             .getInstance(context)
             .enqueueUniquePeriodicWork(
-                WORKER_NAME,
+                WORKER_NAME + content,
                 ExistingPeriodicWorkPolicy.UPDATE,
                 notificationRequest
             )
-    }
-
-    fun cancelAll() {
-        WorkManager.getInstance(context).cancelAllWorkByTag(WORKER_TAG)
     }
 }

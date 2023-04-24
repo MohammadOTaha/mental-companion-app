@@ -1,8 +1,6 @@
 package com.omar.mentalcompanion.presentation.screens
 
 import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 
 sealed class ActiveScreen(val route: String, val args: List<NamedNavArgument> = emptyList()) {
 
@@ -12,19 +10,7 @@ sealed class ActiveScreen(val route: String, val args: List<NamedNavArgument> = 
 
     object CollectedDataScreen: ActiveScreen("collected_data_screen")
 
-    object QuestionnaireScreen: ActiveScreen("questionnaire_screen", listOf(
-        navArgument("questionNumber") {
-            type = NavType.IntType
-            defaultValue = 0
-            nullable = false
-        }
-    ))
+    object QuestionnaireScreen: ActiveScreen("questionnaire_screen")
 
-    fun getRouteWithArgs(vararg args: String): String {
-        var route = route
-        args.forEach {
-            route += "/$it"
-        }
-        return route
-    }
+    object SleepQuestionScreen: ActiveScreen("sleep_question_screen")
 }

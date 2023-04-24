@@ -21,13 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.omar.mentalcompanion.presentation.screens.ActiveScreen
+import com.omar.mentalcompanion.presentation.MainViewModel
 import com.omar.mentalcompanion.presentation.screens.introduction.events.IntroductionPageEvent
 import com.omar.mentalcompanion.presentation.screens.introduction.utils.IntroductionPageConstants
 
 @Composable
 fun IntroductionScreen(
-    viewModel: IntroductionViewModel = hiltViewModel(),
+    introductionViewModel: IntroductionViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     navController: NavController
 ) {
     Column(
@@ -36,7 +37,7 @@ fun IntroductionScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         AnimatedContent(
-            targetState = viewModel.getPage(),
+            targetState = introductionViewModel.getPage(),
             transitionSpec = {
                 if (initialState < targetState) {
                     slideInHorizontally(
@@ -61,14 +62,15 @@ fun IntroductionScreen(
                 }
             }
         ) {
-            Page(viewModel = viewModel, navController = navController)
+            Page(introductionViewModel = introductionViewModel, mainViewModel = mainViewModel, navController = navController)
         }
     }
 }
 
 @Composable
 private fun Page(
-    viewModel: IntroductionViewModel,
+    introductionViewModel: IntroductionViewModel,
+    mainViewModel: MainViewModel,
     navController: NavController
 ) {
     Column(
@@ -79,7 +81,7 @@ private fun Page(
         Spacer(modifier = Modifier)
 
         Text(
-            text = IntroductionPageConstants.getPageText(viewModel.getPage()),
+            text = IntroductionPageConstants.getPageText(introductionViewModel.getPage()),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground,
@@ -88,7 +90,7 @@ private fun Page(
                 .padding(16.dp)
         )
 
-        if (viewModel.getPage() >= 5) Button(
+        if (introductionViewModel.getPage() >= 5) Button(
             onClick = { /*TODO*/ },
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,10 +111,10 @@ private fun Page(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            if (viewModel.getPage() != 0) {
+            if (introductionViewModel.getPage() != 0) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        viewModel.onEvent(IntroductionPageEvent.PreviousPage)
+                        introductionViewModel.onEvent(IntroductionPageEvent.PreviousPage)
                     },
                     elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
                     containerColor = Color.Transparent,
@@ -129,11 +131,11 @@ private fun Page(
 
             ExtendedFloatingActionButton(
                 onClick = {
-                    if (viewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
-                        viewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
-                        navController.navigate(ActiveScreen.QuestionnaireScreen.getRouteWithArgs("0"))
+                    if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
+                        introductionViewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
+                        navController.navigate(mainViewModel.getDestination())
                     } else {
-                        viewModel.onEvent(IntroductionPageEvent.NextPage)
+                        introductionViewModel.onEvent(IntroductionPageEvent.NextPage)
                     }
                 },
                 elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp),

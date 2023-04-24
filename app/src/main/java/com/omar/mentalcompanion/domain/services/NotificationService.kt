@@ -1,5 +1,6 @@
 package com.omar.mentalcompanion.domain.services
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -7,30 +8,54 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.omar.mentalcompanion.presentation.MainActivity
+import kotlin.random.Random
 
-class NotificationService(private val context: Context) {
-    val notificationManager =
-        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+object NotificationService {
+    private const val CHANNEL_ID = "mental_companion_notification_channel"
+    private const val CHANNEL_NAME = "Mental Companion"
 
-    fun getNotification(): NotificationCompat.Builder {
-        val activityIntent = Intent(context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            activityIntent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+    fun createNotification(
+        context: Context,
+        title: String,
+        text: String
+    ) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            context, 0, intent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
         )
 
-        return NotificationCompat
-            .Builder(context, CHANNEL_ID)
-            .setContentTitle("Mental Companion")
+        buildNotificationChannel(context)
+
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
-            .setOngoing(true)
+            .setAutoCancel(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+
+        with(context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager) {
+            notify(Random.nextInt(), builder.build())
+        }
     }
 
-    companion object {
-        const val CHANNEL_ID = "mental_companion_notification_channel"
-        const val CHANNEL_NAME = "Mental Companion"
+    private fun buildNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 }

@@ -29,43 +29,43 @@ class BackgroundService: Service() {
     override fun onCreate() {
         super.onCreate()
 
-        notificationService = NotificationService(this)
+//        notificationService = NotificationService(this)
         locationLiveData = LocationLiveData(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when(intent?.action) {
-            ACTION_START -> start()
+//            ACTION_START -> start()
             ACTION_STOP -> stop()
         }
 
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun start() {
-        val notification = notificationService.getNotification()
-
-        locationLiveData.observeForever { location ->
-            val lat = location.latitude.toString()
-            val long = location.longitude.toString()
-            val updatedNotification = notification.setContentText(
-                "Location: ($lat, $long)"
-            )
-
-            FirebaseFirestore.getInstance().collection("location").add(
-                hashMapOf(
-                    "lat" to lat,
-                    "lon" to long
-                )
-            )
-
-            insertLocation(Location(lat.toDouble(), long.toDouble(), 0.0f, 0))
-
-            notificationService.notificationManager.notify(Random.nextInt(), updatedNotification.build())
-        }
-
-        startForeground(1, notification.build())
-    }
+//    private fun start() {
+//        val notification = notificationService.getNotification()
+//
+//        locationLiveData.observeForever { location ->
+//            val lat = location.latitude.toString()
+//            val long = location.longitude.toString()
+//            val updatedNotification = notification.setContentText(
+//                "Location: ($lat, $long)"
+//            )
+//
+//            FirebaseFirestore.getInstance().collection("location").add(
+//                hashMapOf(
+//                    "lat" to lat,
+//                    "lon" to long
+//                )
+//            )
+//
+//            insertLocation(Location(lat.toDouble(), long.toDouble(), 0.0f, 0))
+//
+//            notificationService.notificationManager.notify(Random.nextInt(), updatedNotification.build())
+//        }
+//
+//        startForeground(1, notification.build())
+//    }
 
     private fun insertLocation(location: Location) {
         serviceScope.launch {

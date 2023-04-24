@@ -10,6 +10,7 @@ import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.domain.repositories.ApplicationUsageRepository
 import com.omar.mentalcompanion.domain.repositories.LocationRepository
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
+import com.omar.mentalcompanion.domain.services.NotificationSchedulerService
 import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import dagger.Module
@@ -79,5 +80,11 @@ object AppModule {
     @Singleton
     fun provideSyncService(applicationUsageRepository: ApplicationUsageRepository): SyncService {
         return SyncService(applicationUsageRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationSchedulerService(@ApplicationContext context: Context): NotificationSchedulerService {
+        return NotificationSchedulerService(context)
     }
 }

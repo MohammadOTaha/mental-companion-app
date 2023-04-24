@@ -57,6 +57,12 @@ fun WelcomeScreen(
                     .align(Alignment.CenterHorizontally),
                 color = MaterialTheme.colorScheme.onBackground
             )
+
+            Button(onClick = {
+                mainViewModel.scheduleReminderNotification(16, 25, "Test notification", "This is a test notification")
+            }) {
+                Text(text = "Notify!")
+            }
         }
 
         Text(

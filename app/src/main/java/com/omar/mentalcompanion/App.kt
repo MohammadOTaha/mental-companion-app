@@ -19,20 +19,20 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        buildNotificationChannel()
+//        buildNotificationChannel()
     }
 
-    private fun buildNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                NotificationService.CHANNEL_ID,
-                NotificationService.CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW
-            )
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
+//    private fun buildNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val channel = NotificationChannel(
+//                NotificationService.CHANNEL_ID,
+//                NotificationService.CHANNEL_NAME,
+//                NotificationManager.IMPORTANCE_DEFAULT
+//            )
+//            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+//            notificationManager.createNotificationChannel(channel)
+//        }
+//    }
 
     override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder()

@@ -9,6 +9,7 @@ import com.omar.mentalcompanion.data.entities.MetaData
 import com.omar.mentalcompanion.data.entities.MetaDataKeys
 import com.omar.mentalcompanion.data.entities.MetaDataValues
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
+import com.omar.mentalcompanion.domain.services.NotificationSchedulerService
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val metaDataRepository: MetaDataRepository
+    private val metaDataRepository: MetaDataRepository,
+    private val notificationSchedulerService: NotificationSchedulerService,
 ) : ViewModel() {
 
     val permissionsToRequest = arrayOf(
@@ -100,5 +102,9 @@ class MainViewModel @Inject constructor(
 
             7 - daysSinceLastQuestionnaire
         }
+    }
+
+    fun scheduleReminderNotification(hourOfDay: Int, minute: Int, title: String, content: String) {
+        notificationSchedulerService.scheduleReminderNotification(hourOfDay, minute, title, content)
     }
 }

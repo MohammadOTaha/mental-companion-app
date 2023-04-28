@@ -75,6 +75,13 @@ class MainViewModel @Inject constructor(
                         value = MetaDataValues.NO_SCORE
                     )
                 )
+
+                metaDataRepository.upsertMetaData(
+                    MetaData(
+                        key = MetaDataKeys.LAST_SLEEP_DATE,
+                        value = MetaDataValues.EARLIEST_DATE
+                    )
+                )
             }
         }
     }
@@ -95,7 +102,9 @@ class MainViewModel @Inject constructor(
                 return@runBlocking ActiveScreen.QuestionnaireScreen.route
             } else {
                 val lastSleepHours = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_SLEEP_HOURS) }
-                if (lastSleepHours.await() == MetaDataValues.NO_SCORE &&
+                val lastSleepDate = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_SLEEP_DATE) }
+                // check if last sleep date is not today and it's past 12pm
+                if ((lastSleepHours.await() == MetaDataValues.NO_SCORE || lastSleepDate.await() != today.toString()) &&
                     Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 12
                 ) {
                     return@runBlocking ActiveScreen.SleepQuestionScreen.route

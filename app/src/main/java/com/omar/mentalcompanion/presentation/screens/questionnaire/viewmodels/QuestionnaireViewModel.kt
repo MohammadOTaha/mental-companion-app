@@ -68,6 +68,13 @@ class QuestionnaireViewModel @Inject constructor(
                             value = event.hours.toString()
                         )
                     )
+
+                    metaDataRepository.upsertMetaData(
+                        MetaData(
+                            key = MetaDataKeys.LAST_SLEEP_DATE,
+                            value = LocalDate.now().toString()
+                        )
+                    )
                 }
             }
         }

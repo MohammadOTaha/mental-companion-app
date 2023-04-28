@@ -1,5 +1,7 @@
 package com.omar.mentalcompanion.presentation.screens.introduction.utils
 
+import android.Manifest
+
 class IntroductionPageConstants {
     companion object {
         const val PAGES_COUNT = 8
@@ -21,12 +23,12 @@ class IntroductionPageConstants {
         private const val P5_TEXT = "Location:\n" +
                 "Needed to get an idea about the places you usually visit."
 
-        private const val P6_TEXT = "Applications Usage:\n" +
-                "Needed to get an idea about how much time you spend on your phone."
-
-        private const val P7_TEXT = "Phone Calls:\n" +
+        private const val P6_TEXT = "Phone Calls:\n" +
                 "Needed to get an idea how many calls you receive and make.\n\n" +
                 "Note: the app only stores the duration of the calls only, and no other information."
+
+        private const val P7_TEXT = "Applications Usage:\n" +
+                "Needed to get an idea about how much time you spend on your phone."
 
         fun getPageText(page: Int): String {
             return when (page) {
@@ -38,6 +40,19 @@ class IntroductionPageConstants {
                 5 -> P5_TEXT
                 6 -> P6_TEXT
                 7 -> P7_TEXT
+                else -> ""
+            }
+        }
+
+        private const val P5_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
+        private const val P6_PERMISSION = Manifest.permission.READ_CALL_LOG
+        private const val P7_PERMISSION = Manifest.permission.PACKAGE_USAGE_STATS
+
+        fun getPagePermission(page: Int): String {
+            return when (page) {
+                5 -> P5_PERMISSION
+                6 -> P6_PERMISSION
+                7 -> P7_PERMISSION
                 else -> ""
             }
         }

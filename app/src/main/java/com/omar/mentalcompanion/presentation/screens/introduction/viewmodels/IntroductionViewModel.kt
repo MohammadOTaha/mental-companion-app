@@ -20,6 +20,14 @@ class IntroductionViewModel @Inject constructor(
 
     fun getPage() = _state.value.page
 
+    fun getIsRequestPermissionButtonPressed() = _state.value.isRequestPermissionButtonPressed
+
+    fun setIsRequestPermissionButtonPressed(isRequestPermissionButtonPressed: Boolean) {
+        _state.value = _state.value.copy(
+            isRequestPermissionButtonPressed = isRequestPermissionButtonPressed
+        )
+    }
+
     fun onEvent(event: IntroductionPageEvent) {
         when (event) {
             is IntroductionPageEvent.NextPage -> {
@@ -41,6 +49,9 @@ class IntroductionViewModel @Inject constructor(
                         )
                     )
                 }
+            }
+            is IntroductionPageEvent.RequestPermission -> {
+                setIsRequestPermissionButtonPressed(true)
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.omar.mentalcompanion.presentation
+package com.omar.mentalcompanion.presentation.screens.introduction.components
 
 import android.Manifest
 import androidx.compose.foundation.clickable
@@ -13,16 +13,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun PermissionDialog(
-    permissionTextProvider: PermissionTextProvider,
+    permission: String,
     isPermanentlyDeclined: Boolean,
     onDismiss: () -> Unit,
-    onOkClick: () -> Unit,
+    onConfirm: () -> Unit,
     onGoToAppSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val permissionTextProvider = when(permission) {
+        Manifest.permission.ACCESS_FINE_LOCATION -> GpsPermissionTextProvider()
+        Manifest.permission.PACKAGE_USAGE_STATS -> AppsUsagePermissionTextProvider()
+        Manifest.permission.READ_CALL_LOG -> PhoneCallLogPermissionTextProvider()
+        else -> throw IllegalArgumentException("Unknown permission: $permission")
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -36,6 +44,7 @@ fun PermissionDialog(
                     } else {
                         "OK"
                     },
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -44,7 +53,7 @@ fun PermissionDialog(
                             if (isPermanentlyDeclined) {
                                 onGoToAppSettingsClick()
                             } else {
-                                onOkClick()
+                                onConfirm()
                             }
                         }
                         .padding(16.dp)
@@ -74,7 +83,7 @@ class GpsPermissionTextProvider: PermissionTextProvider {
         return if(isPermanentlyDeclined) {
             "It seems you permanently declined Location permissions. " + "You can go to the app settings to grant it."
         } else {
-            "This app needs access to your Location in order for the algorithm to run correctly!"
+            "This app needs access to your Location in order to run correctly!"
         }
     }
 }
@@ -84,7 +93,7 @@ class AppsUsagePermissionTextProvider: PermissionTextProvider {
         return if(isPermanentlyDeclined) {
             "It seems you did not accept Applications Usage permissions. " + "You can go to the app settings to grant it."
         } else {
-            "This app needs access to your Applications Usage in order for the algorithm to run correctly!"
+            "This app needs access to your Applications Usage in order to run correctly!"
         }
     }
 }
@@ -95,7 +104,7 @@ class PhoneCallLogPermissionTextProvider: PermissionTextProvider {
             "It seems you permanently declined Phone Calls history permission. " +
                     "You can go to the app settings to grant it."
         } else {
-            "This app needs access to your Phone Calls history in order for the algorithm to run correctly!"
+            "This app needs access to your Phone Calls history in order to run correctly!"
         }
     }
 }

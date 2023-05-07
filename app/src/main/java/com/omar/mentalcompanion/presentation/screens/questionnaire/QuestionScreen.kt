@@ -173,7 +173,11 @@ private fun QuestionnaireAnswers(
                                 questionnaireViewModel.onEvent(QuestionnaireEvent.NextQuestion)
                             } else {
                                 questionnaireViewModel.onEvent(QuestionnaireEvent.FinishQuestionnaire)
-                                navController.navigate(runBlocking { mainViewModel.getDestination() })
+                                navController.navigate(runBlocking { mainViewModel.getDestination() }) {
+                                    popUpTo(navController.graph.id) {
+                                        inclusive = true
+                                    }
+                                }
                             }
                         },
                     ) {
@@ -299,7 +303,11 @@ fun SleepHoursQuestion(
             ExtendedFloatingActionButton(
                 onClick = {
                     viewModel.onEvent(QuestionnaireEvent.SelectSleepHours(selectedHour))
-                    navController.navigate(ActiveScreen.WelcomeBackScreen.route)
+                    navController.navigate(ActiveScreen.WelcomeBackScreen.route) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

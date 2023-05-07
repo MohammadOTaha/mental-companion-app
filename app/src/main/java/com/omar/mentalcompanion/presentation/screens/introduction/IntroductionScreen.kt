@@ -136,7 +136,12 @@ private fun Page(
 
         if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
             introductionViewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
-            navController.navigate(runBlocking { mainViewModel.getDestination() })
+            // navigate and clear back stack
+            navController.navigate(runBlocking { mainViewModel.getDestination() }) {
+                popUpTo(navController.graph.id) {
+                    inclusive = true
+                }
+            }
         } else {
             introductionViewModel.onEvent(IntroductionPageEvent.NextPage)
         }
@@ -204,7 +209,11 @@ private fun Page(
                     ) {
                         if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
                             introductionViewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
-                            navController.navigate(runBlocking { mainViewModel.getDestination() })
+                            navController.navigate(runBlocking { mainViewModel.getDestination() }) {
+                                popUpTo(navController.graph.id) {
+                                    inclusive = true
+                                }
+                            }
                         } else {
                             introductionViewModel.onEvent(IntroductionPageEvent.NextPage)
                         }

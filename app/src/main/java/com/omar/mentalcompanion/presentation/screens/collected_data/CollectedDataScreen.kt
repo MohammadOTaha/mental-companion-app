@@ -58,7 +58,11 @@ fun CollectedDataScreen (
                 }
 
                 Button(onClick = {
-                    navController.navigate(ActiveScreen.QuestionnaireScreen.route)
+                    navController.navigate(ActiveScreen.QuestionnaireScreen.route) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
                 }) {
                     Text(text = "Go to Questionnaire")
                 }

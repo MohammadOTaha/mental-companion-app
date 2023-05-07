@@ -110,12 +110,7 @@ class MainActivity : ComponentActivity() {
         val permissionsList = emptyList<String>().toMutableList()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionsList.add(Manifest.permission.POST_NOTIFICATIONS)
+            ActivityCompat.requestPermissions(this, permissionsList.toTypedArray(), 0)
         }
-        ActivityCompat.requestPermissions(this, permissionsList.toTypedArray(), 0)
-
-//        val usageStatsData: UsageStatsData by lazy { UsageStatsData(applicationContext) }
-//        if (usageStatsData.getAppUsages().isEmpty()) {
-//            this.startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
-//        }
     }
 }

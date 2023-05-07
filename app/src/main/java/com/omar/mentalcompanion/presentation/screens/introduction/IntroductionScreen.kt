@@ -1,12 +1,10 @@
 package com.omar.mentalcompanion.presentation.screens.introduction
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -43,7 +41,6 @@ import com.omar.mentalcompanion.presentation.screens.introduction.components.Per
 import com.omar.mentalcompanion.presentation.screens.introduction.events.IntroductionPageEvent
 import com.omar.mentalcompanion.presentation.screens.introduction.utils.IntroductionPageConstants
 import com.omar.mentalcompanion.presentation.screens.introduction.utils.goToAppSettings
-import com.omar.mentalcompanion.presentation.screens.introduction.utils.goToUsageAccessSettings
 import com.omar.mentalcompanion.presentation.screens.introduction.utils.isUsageAccessGranted
 import com.omar.mentalcompanion.presentation.screens.introduction.viewmodels.IntroductionViewModel
 import com.omar.mentalcompanion.presentation.utils.Constants

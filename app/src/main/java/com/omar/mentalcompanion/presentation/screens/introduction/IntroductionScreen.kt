@@ -35,6 +35,7 @@ import com.omar.mentalcompanion.presentation.screens.introduction.utils.goToUsag
 import com.omar.mentalcompanion.presentation.screens.introduction.utils.isUsageAccessGranted
 import com.omar.mentalcompanion.presentation.screens.introduction.viewmodels.IntroductionViewModel
 import com.omar.mentalcompanion.presentation.utils.Constants
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun IntroductionScreen(
@@ -124,7 +125,7 @@ private fun Page(
 
         if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
             introductionViewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
-            navController.navigate(mainViewModel.getDestination())
+            navController.navigate(runBlocking { mainViewModel.getDestination() })
         } else {
             introductionViewModel.onEvent(IntroductionPageEvent.NextPage)
         }
@@ -239,7 +240,7 @@ private fun Page(
                     ) {
                         if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
                             introductionViewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
-                            navController.navigate(mainViewModel.getDestination())
+                            navController.navigate(runBlocking { mainViewModel.getDestination() })
                         } else {
                             introductionViewModel.onEvent(IntroductionPageEvent.NextPage)
                         }

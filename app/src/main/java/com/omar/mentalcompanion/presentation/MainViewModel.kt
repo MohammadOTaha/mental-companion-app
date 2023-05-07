@@ -1,8 +1,6 @@
 package com.omar.mentalcompanion.presentation
 
-import android.Manifest
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.omar.mentalcompanion.data.entities.MetaData
 import com.omar.mentalcompanion.data.entities.MetaDataKeys
@@ -11,10 +9,12 @@ import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.domain.services.NotificationSchedulerService
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
-import java.time.Period
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -24,30 +24,11 @@ class MainViewModel @Inject constructor(
     private val notificationSchedulerService: NotificationSchedulerService,
 ) : ViewModel() {
 
-    val permissionsToRequest = arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.READ_CALL_LOG,
-    )
-
-    val visiblePermissionDialogQueue = mutableStateListOf<String>()
-
-    fun dismissDialog() {
-        visiblePermissionDialogQueue.removeFirst()
-    }
-
-    fun onPermissionResult(
-        permission: String,
-        isGranted: Boolean
-    ) {
-        if (!isGranted && !visiblePermissionDialogQueue.contains(permission)) {
-            visiblePermissionDialogQueue.add(permission)
-        }
-    }
-
     fun initMetaData() {
         runBlocking {
-            if (metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE).isNullOrEmpty()) {
+            if (metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE)
+                    .isNullOrEmpty()
+            ) {
                 metaDataRepository.upsertMetaData(
                     MetaData(
                         key = MetaDataKeys.LAST_QUESTIONNAIRE_DATE,
@@ -86,44 +67,41 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getDestination(): String {
-        return runBlocking {
-            val introductionCompleted = async { metaDataRepository.getMetaDataValue(MetaDataKeys.INTRODUCTION_COMPLETED) }
-            if (introductionCompleted.await() == MetaDataValues.FALSE) {
-                return@runBlocking ActiveScreen.IntroductionScreen.route
-            }
+    data class MetaData(
+        val introductionCompleted: String,
+        val lastQuestionnaireDate: String,
+        val lastSleepHours: String,
+        val lastSleepDate: String
+    )
 
-            val lastQuestionnaireDate = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE) }
-            val today = LocalDate.now()
-            val lastQuestionnaireDateParsed = LocalDate.parse(lastQuestionnaireDate.await())
-            val daysSinceLastQuestionnaire = Period.between(lastQuestionnaireDateParsed, today).days
+    suspend fun getDestination(): String = withContext(Dispatchers.IO) {
+        val metaDataDeferred = async {
+            MetaData(
+                introductionCompleted = metaDataRepository.getMetaDataValue(MetaDataKeys.INTRODUCTION_COMPLETED)!!,
+                lastQuestionnaireDate = metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE)!!,
+                lastSleepHours = metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_SLEEP_HOURS)!!,
+                lastSleepDate = metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_SLEEP_DATE)!!
+            )
+        }
 
-            if (daysSinceLastQuestionnaire >= 7) {
-                return@runBlocking ActiveScreen.QuestionnaireScreen.route
-            } else {
-                val lastSleepHours = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_SLEEP_HOURS) }
-                val lastSleepDate = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_SLEEP_DATE) }
-                // check if last sleep date is not today and it's past 12pm
-                if ((lastSleepHours.await() == MetaDataValues.NO_SCORE || lastSleepDate.await() != today.toString()) &&
-                    Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 12
-                ) {
-                    return@runBlocking ActiveScreen.SleepQuestionScreen.route
-                }
-
-                return@runBlocking ActiveScreen.WelcomeBackScreen.route
-            }
+        val metaData = metaDataDeferred.await()
+        when {
+            metaData.introductionCompleted == MetaDataValues.FALSE -> ActiveScreen.IntroductionScreen.route
+            ChronoUnit.DAYS.between(LocalDate.parse(metaData.lastQuestionnaireDate), LocalDate.now()).toInt() >= 7 -> ActiveScreen.QuestionnaireScreen.route
+            (metaData.lastSleepHours == MetaDataValues.NO_SCORE || metaData.lastSleepDate != LocalDate.now().toString()) && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 12 -> ActiveScreen.SleepQuestionScreen.route
+            else -> ActiveScreen.WelcomeBackScreen.route
         }
     }
 
-    fun getTimeUntilNextQuestionnaire(): Int {
-        return runBlocking {
-            val lastQuestionnaireDate = async { metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE) }
-            val today = LocalDate.now()
-            val lastQuestionnaireDateParsed = LocalDate.parse(lastQuestionnaireDate.await())
-            val daysSinceLastQuestionnaire = Period.between(lastQuestionnaireDateParsed, today).days
+    suspend fun getTimeUntilNextQuestionnaire(): Int = withContext(Dispatchers.IO) {
+        val lastQuestionnaireDate = metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE)
+        val daysSinceLastQuestionnaire =
+            ChronoUnit.DAYS.between(
+                LocalDate.parse(lastQuestionnaireDate),
+                LocalDate.now()
+            ).toInt()
 
-            7 - daysSinceLastQuestionnaire
-        }
+        7 - daysSinceLastQuestionnaire
     }
 
     fun scheduleReminderNotification(

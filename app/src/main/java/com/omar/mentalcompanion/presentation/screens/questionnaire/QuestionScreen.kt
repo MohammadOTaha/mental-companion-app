@@ -37,6 +37,7 @@ import com.omar.mentalcompanion.presentation.screens.questionnaire.viewmodels.Qu
 import com.omar.mentalcompanion.presentation.utils.Constants.CONTENT_ANIMATION_DURATION
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 @Composable
@@ -172,7 +173,7 @@ private fun QuestionnaireAnswers(
                                 questionnaireViewModel.onEvent(QuestionnaireEvent.NextQuestion)
                             } else {
                                 questionnaireViewModel.onEvent(QuestionnaireEvent.FinishQuestionnaire)
-                                navController.navigate(mainViewModel.getDestination())
+                                navController.navigate(runBlocking { mainViewModel.getDestination() })
                             }
                         },
                     ) {

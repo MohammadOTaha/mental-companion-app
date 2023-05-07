@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.omar.mentalcompanion.presentation.MainViewModel
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun WelcomeScreen(
@@ -34,7 +35,7 @@ fun WelcomeScreen(
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(
-                text = "Hello!\nYour next questionnaire is in: ${mainViewModel.getTimeUntilNextQuestionnaire()} days.",
+                text = "Hello!\nYour next questionnaire is in: ${runBlocking { mainViewModel.getTimeUntilNextQuestionnaire() }} days.",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

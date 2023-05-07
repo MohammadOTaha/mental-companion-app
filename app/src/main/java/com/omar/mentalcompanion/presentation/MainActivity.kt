@@ -32,6 +32,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.omar.mentalcompanion.domain.utils.*
 import com.omar.mentalcompanion.presentation.screens.introduction.IntroductionScreen
+import kotlinx.coroutines.runBlocking
 
 
 @AndroidEntryPoint
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberAnimatedNavController()
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = mainViewModel.getDestination()
+                    startDestination = runBlocking { mainViewModel.getDestination() }
                 ) {
                     composable(route = ActiveScreen.IntroductionScreen.route) {
                         IntroductionScreen(navController = navController)

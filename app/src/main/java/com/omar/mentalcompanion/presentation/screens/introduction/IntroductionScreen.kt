@@ -31,6 +31,8 @@ import com.omar.mentalcompanion.presentation.screens.introduction.components.Per
 import com.omar.mentalcompanion.presentation.screens.introduction.events.IntroductionPageEvent
 import com.omar.mentalcompanion.presentation.screens.introduction.utils.IntroductionPageConstants
 import com.omar.mentalcompanion.presentation.screens.introduction.utils.goToAppSettings
+import com.omar.mentalcompanion.presentation.screens.introduction.utils.goToUsageAccessSettings
+import com.omar.mentalcompanion.presentation.screens.introduction.utils.isUsageAccessGranted
 import com.omar.mentalcompanion.presentation.screens.introduction.viewmodels.IntroductionViewModel
 import com.omar.mentalcompanion.presentation.utils.Constants
 
@@ -92,14 +94,14 @@ private fun Page(
 
     val showDialog = remember { mutableStateOf(false) }
 
-    if (showDialog.value) {
-        val context = LocalContext.current
+    val context = LocalContext.current
 
+    if (showDialog.value) {
         PermissionDialog(
             permission = IntroductionPageConstants.getPagePermission(
                 introductionViewModel.getPage()
             ),
-            isPermanentlyDeclined = !permissionState.status.shouldShowRationale,
+            isPermanentlyDeclined = permissionState.status.shouldShowRationale,
             onDismiss = {
                 introductionViewModel.setIsRequestPermissionButtonPressed(false)
             },
@@ -116,7 +118,7 @@ private fun Page(
     }
 
     if (introductionViewModel.getIsRequestPermissionButtonPressed() &&
-        permissionState.status.isGranted
+        (permissionState.status.isGranted || (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context)))
     ) {
         introductionViewModel.setIsRequestPermissionButtonPressed(false)
 
@@ -148,37 +150,54 @@ private fun Page(
         if (introductionViewModel.getPage() >= 5) {
             Button(
                 onClick = {
-                    if (permissionState.status.shouldShowRationale) {
-                        permissionState.launchPermissionRequest()
+                    if (introductionViewModel.getPage() != 7) {
+                        if (!permissionState.status.shouldShowRationale) {
+                            permissionState.launchPermissionRequest()
+
+                            introductionViewModel.onEvent(
+                                IntroductionPageEvent.RequestPermission(
+                                    permissionState.permission
+                                )
+                            )
+                        } else {
+                            showDialog.value = true
+                        }
+                    } else {
+                        goToUsageAccessSettings(context)
 
                         introductionViewModel.onEvent(
                             IntroductionPageEvent.RequestPermission(
                                 permissionState.permission
                             )
                         )
-                    } else {
-                        showDialog.value = true
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 50.dp, end = 50.dp),
                 shape = MaterialTheme.shapes.small,
-                enabled = !permissionState.status.isGranted
+                enabled = !permissionState.status.isGranted &&
+                    !(introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
             ) {
                 Text(
-                    text = if (permissionState.status.isGranted) {
+                    text = if (permissionState.status.isGranted ||
+                        (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
+                    ) {
                         "Permission Granted"
                     } else {
                         "Allow Access"
                     },
                     modifier = Modifier,
-                    color = if (permissionState.status.isGranted) {
+                    color = if (permissionState.status.isGranted ||
+                        (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
+                    ) {
                         MaterialTheme.colorScheme.onSurface
                     } else {
                         MaterialTheme.colorScheme.onPrimary
                     },
-                    fontSize = if (permissionState.status.isGranted) {
+                    fontSize = if (permissionState.status.isGranted ||
+                        (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
+                    ) {
                         16.sp
                     } else {
                         20.sp
@@ -213,7 +232,11 @@ private fun Page(
 
             ExtendedFloatingActionButton(
                 onClick = {
-                    if (permissionState.status.isGranted || introductionViewModel.getPage() < 5) {
+                    if (
+                        (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context)) ||
+                        permissionState.status.isGranted || 
+                        introductionViewModel.getPage() < 5
+                    ) {
                         if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
                             introductionViewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
                             navController.navigate(mainViewModel.getDestination())

@@ -52,18 +52,6 @@ class MainActivity : ComponentActivity() {
 
                 init(mainViewModel)
 
-                val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.RequestMultiplePermissions(),
-                    onResult = { perms ->
-                        mainViewModel.permissionsToRequest.forEach { permission ->
-                            mainViewModel.onPermissionResult(
-                                permission = permission,
-                                isGranted = perms[permission] == true
-                            )
-                        }
-                    }
-                )
-
                 val navController = rememberAnimatedNavController()
                 AnimatedNavHost(
                     navController = navController,
@@ -129,11 +117,4 @@ class MainActivity : ComponentActivity() {
 //            this.startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
 //        }
     }
-}
-
-fun Activity.openAppSettings() {
-    Intent(
-        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        Uri.fromParts("package", packageName, null)
-    ).also(::startActivity)
 }

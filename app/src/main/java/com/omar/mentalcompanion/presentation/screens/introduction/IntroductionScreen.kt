@@ -1,5 +1,15 @@
 package com.omar.mentalcompanion.presentation.screens.introduction
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -12,6 +22,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
@@ -37,11 +49,12 @@ import com.omar.mentalcompanion.presentation.screens.introduction.viewmodels.Int
 import com.omar.mentalcompanion.presentation.utils.Constants
 import kotlinx.coroutines.runBlocking
 
+@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun IntroductionScreen(
     introductionViewModel: IntroductionViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     Column(
         modifier = Modifier
@@ -83,12 +96,13 @@ fun IntroductionScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.M)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun Page(
     introductionViewModel: IntroductionViewModel,
     mainViewModel: MainViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val permissionState =
         rememberPermissionState(IntroductionPageConstants.getPagePermission(introductionViewModel.getPage()))
@@ -149,60 +163,13 @@ private fun Page(
         )
 
         if (introductionViewModel.getPage() >= 5) {
-            Button(
-                onClick = {
-                    if (introductionViewModel.getPage() != 7) {
-                        if (!permissionState.status.shouldShowRationale) {
-                            permissionState.launchPermissionRequest()
-
-                            introductionViewModel.onEvent(
-                                IntroductionPageEvent.RequestPermission(
-                                    permissionState.permission
-                                )
-                            )
-                        } else {
-                            showDialog.value = true
-                        }
-                    } else {
-                        goToUsageAccessSettings(context)
-
-                        introductionViewModel.onEvent(
-                            IntroductionPageEvent.RequestPermission(
-                                permissionState.permission
-                            )
-                        )
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 50.dp, end = 50.dp),
-                shape = MaterialTheme.shapes.small,
-                enabled = !permissionState.status.isGranted &&
-                    !(introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
-            ) {
-                Text(
-                    text = if (permissionState.status.isGranted ||
-                        (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
-                    ) {
-                        "Permission Granted"
-                    } else {
-                        "Allow Access"
-                    },
-                    modifier = Modifier,
-                    color = if (permissionState.status.isGranted ||
-                        (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
-                    ) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onPrimary
-                    },
-                    fontSize = if (permissionState.status.isGranted ||
-                        (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context))
-                    ) {
-                        16.sp
-                    } else {
-                        20.sp
-                    }
+            if (introductionViewModel.getPage() == 7) {
+                RequestUsageAccessPermissionButton(context)
+            } else {
+                RequestRegularPermissionButton(
+                    introductionViewModel,
+                    permissionState,
+                    showDialog
                 )
             }
         }
@@ -235,7 +202,7 @@ private fun Page(
                 onClick = {
                     if (
                         (introductionViewModel.getPage() == 7 && isUsageAccessGranted(context)) ||
-                        permissionState.status.isGranted || 
+                        permissionState.status.isGranted ||
                         introductionViewModel.getPage() < 5
                     ) {
                         if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
@@ -258,5 +225,102 @@ private fun Page(
                 )
             }
         }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalPermissionsApi::class)
+private fun RequestRegularPermissionButton(
+    introductionViewModel: IntroductionViewModel,
+    permissionState: PermissionState,
+    showDialog: MutableState<Boolean>
+) {
+    Button(
+        onClick = {
+            if (!permissionState.status.shouldShowRationale) {
+                permissionState.launchPermissionRequest()
+
+                introductionViewModel.onEvent(
+                    IntroductionPageEvent.RequestPermission(
+                        permissionState.permission
+                    )
+                )
+            } else {
+                showDialog.value = true
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 50.dp, end = 50.dp),
+        shape = MaterialTheme.shapes.small,
+        enabled = !permissionState.status.isGranted
+    ) {
+        Text(
+            text = if (permissionState.status.isGranted) {
+                "Permission Granted"
+            } else {
+                "Allow Access"
+            },
+            modifier = Modifier,
+            color = if (permissionState.status.isGranted) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            },
+            fontSize = if (permissionState.status.isGranted) {
+                16.sp
+            } else {
+                20.sp
+            }
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.M)
+@Composable
+fun RequestUsageAccessPermissionButton(
+    context: Context
+) {
+    val usageAccessPermissionState = remember { mutableStateOf(
+        isUsageAccessGranted(context)
+    ) }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK || isUsageAccessGranted(context)) {
+            usageAccessPermissionState.value = true
+        }
+    }
+
+    Button(
+        onClick = {
+            launcher.launch(
+                Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 50.dp, end = 50.dp),
+        shape = MaterialTheme.shapes.small,
+        enabled = !usageAccessPermissionState.value
+    ) {
+        Text(
+            text = if (usageAccessPermissionState.value) {
+                "Permission Granted"
+            } else {
+                "Allow Access"
+            },
+            modifier = Modifier,
+            color = if (usageAccessPermissionState.value) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            },
+            fontSize = if (usageAccessPermissionState.value) {
+                16.sp
+            } else {
+                20.sp
+            }
+        )
     }
 }

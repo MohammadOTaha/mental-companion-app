@@ -47,7 +47,11 @@ object NotificationService {
         }
     }
 
-    private fun buildNotificationChannel(context: Context) {
+    fun getNotificationBuilder(context: Context) = NotificationCompat.Builder(context, CHANNEL_ID)
+
+    fun getNotificationManager(context: Context) = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    fun buildNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,

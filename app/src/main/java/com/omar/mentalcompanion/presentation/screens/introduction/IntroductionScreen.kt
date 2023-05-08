@@ -36,6 +36,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.omar.mentalcompanion.domain.services.LocationBackgroundService
 import com.omar.mentalcompanion.presentation.MainViewModel
 import com.omar.mentalcompanion.presentation.screens.introduction.components.PermissionDialog
 import com.omar.mentalcompanion.presentation.screens.introduction.events.IntroductionPageEvent
@@ -52,6 +53,7 @@ fun IntroductionScreen(
     introductionViewModel: IntroductionViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     navController: NavController,
+    startLocationBackgroundService: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -87,7 +89,8 @@ fun IntroductionScreen(
             Page(
                 introductionViewModel = introductionViewModel,
                 mainViewModel = mainViewModel,
-                navController = navController
+                navController = navController,
+                startLocationBackgroundService = startLocationBackgroundService,
             )
         }
     }
@@ -100,6 +103,7 @@ private fun Page(
     introductionViewModel: IntroductionViewModel,
     mainViewModel: MainViewModel,
     navController: NavController,
+    startLocationBackgroundService: () -> Unit,
 ) {
     val permissionState =
         rememberPermissionState(IntroductionPageConstants.getPagePermission(introductionViewModel.getPage()))
@@ -136,12 +140,13 @@ private fun Page(
 
         if (introductionViewModel.getPage() >= IntroductionPageConstants.PAGES_COUNT - 1) {
             introductionViewModel.onEvent(IntroductionPageEvent.FinishIntroduction)
-            // navigate and clear back stack
             navController.navigate(runBlocking { mainViewModel.getDestination() }) {
                 popUpTo(navController.graph.id) {
                     inclusive = true
                 }
             }
+
+            startLocationBackgroundService()
         } else {
             introductionViewModel.onEvent(IntroductionPageEvent.NextPage)
         }
@@ -214,6 +219,8 @@ private fun Page(
                                     inclusive = true
                                 }
                             }
+
+                            startLocationBackgroundService()
                         } else {
                             introductionViewModel.onEvent(IntroductionPageEvent.NextPage)
                         }

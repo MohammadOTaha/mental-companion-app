@@ -4,6 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 fun Long.toFormattedTimeString(): String {
-    val dateFormat = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
     return dateFormat.format(this)
 }

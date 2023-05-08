@@ -26,7 +26,6 @@ fun CollectedDataScreen (
 ) {
     val applicationViewModel = hiltViewModel<AppViewModel>()
     val appUsageViewModel = hiltViewModel<ApplicationUsageViewModel>()
-    val location by applicationViewModel.locationLiveData.observeAsState()
     val totalScreenTime = applicationViewModel.totalScreenTime.collectAsState()
     val usageStatsList = applicationViewModel.appUsageList.collectAsState()
     val phoneCallsLog = applicationViewModel.phoneCallsLog.collectAsState()
@@ -45,7 +44,6 @@ fun CollectedDataScreen (
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(onClick = {
-                    applicationViewModel.updateLocation()
                     applicationViewModel.updateAppUsageList()
                     applicationViewModel.updateTotalScreenTime()
                     applicationViewModel.updatePhoneCallsLog()
@@ -70,7 +68,6 @@ fun CollectedDataScreen (
 
             TableScreen(
                 data = mapOf(
-                    "Location" to "Latitude: ${location?.latitude}, Longitude: ${location?.longitude} \nAccuracy: ${location?.accuracy}\nTime: ${location?.time?.toFormattedTimeString()}",
                     "Total Screen Time" to totalScreenTime.value,
                     "Usage Stats" to usageStatsList.value,
                     "Phone Calls Log" to phoneCallsLog.value

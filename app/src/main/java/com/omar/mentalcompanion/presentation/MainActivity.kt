@@ -1,14 +1,11 @@
 package com.omar.mentalcompanion.presentation
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.core.app.ActivityCompat
@@ -16,12 +13,8 @@ import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import com.omar.mentalcompanion.presentation.screens.questionnaire.QuestionScreen
 import dagger.hilt.android.AndroidEntryPoint
-import android.provider.Settings
-import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import androidx.work.*
 import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
@@ -30,6 +23,7 @@ import javax.inject.Inject
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.omar.mentalcompanion.domain.services.LocationBackgroundService
 import com.omar.mentalcompanion.domain.utils.*
 import com.omar.mentalcompanion.presentation.screens.introduction.IntroductionScreen
 import kotlinx.coroutines.runBlocking
@@ -59,7 +53,10 @@ class MainActivity : ComponentActivity() {
                     startDestination = runBlocking { mainViewModel.getDestination() }
                 ) {
                     composable(route = ActiveScreen.IntroductionScreen.route) {
-                        IntroductionScreen(navController = navController)
+                        IntroductionScreen(
+                            navController = navController,
+                            startLocationBackgroundService = { this@MainActivity.startLocationBackgroundService() }
+                        )
                     }
 
                     composable(route = ActiveScreen.WelcomeBackScreen.route) {
@@ -88,22 +85,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun init(viewModel: MainViewModel) {
-        viewModel.initMetaData()
+    private fun init(mainViewModel: MainViewModel) {
+        mainViewModel.initMetaData()
 
-        viewModel.scheduleReminderNotification(
+        mainViewModel.scheduleReminderNotification(
             SLEEP_QUESTION_HOUR,
             SLEEP_QUESTION_MINUTE,
             NOTIFICATION_TITLE,
             SLEEP_QUESTION_CONTENT
         )
 
-        viewModel.scheduleReminderNotification(
+        mainViewModel.scheduleReminderNotification(
             QUESTIONNAIRE_REMINDER_HOUR,
             QUESTIONNAIRE_REMINDER_MINUTE,
             NOTIFICATION_TITLE,
             QUESTIONNAIRE_REMINDER_CONTENT
         )
+    }
+
+    private fun startLocationBackgroundService() {
+        Intent(applicationContext, LocationBackgroundService::class.java).apply {
+            action = LocationBackgroundService.ACTION_START
+            startService(this)
+        }
     }
 
     private fun requestPermissions() {

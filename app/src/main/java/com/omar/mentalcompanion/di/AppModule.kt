@@ -11,7 +11,6 @@ import com.omar.mentalcompanion.domain.repositories.ApplicationUsageRepository
 import com.omar.mentalcompanion.domain.repositories.LocationRepository
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.domain.services.NotificationSchedulerService
-import com.omar.mentalcompanion.domain.tracked_data.LocationLiveData
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import dagger.Module
 import dagger.Provides
@@ -66,14 +65,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocationLiveData(@ApplicationContext context: Context): LocationLiveData {
-        return LocationLiveData(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAppViewModel(app: Application, usageStatsData: UsageStatsData, locationLiveData: LocationLiveData): AppViewModel {
-        return AppViewModel(app, usageStatsData, locationLiveData)
+    fun provideAppViewModel(app: Application, usageStatsData: UsageStatsData): AppViewModel {
+        return AppViewModel(app, usageStatsData)
     }
 
     @Provides

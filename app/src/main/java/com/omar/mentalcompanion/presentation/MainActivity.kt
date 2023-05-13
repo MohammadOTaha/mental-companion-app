@@ -7,26 +7,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.core.app.ActivityCompat
-import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
-import com.omar.mentalcompanion.presentation.screens.ActiveScreen
-import com.omar.mentalcompanion.presentation.screens.questionnaire.QuestionScreen
-import dagger.hilt.android.AndroidEntryPoint
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.work.*
-import com.omar.mentalcompanion.data.services.SyncService
-import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
-import com.omar.mentalcompanion.presentation.screens.welcome_back.WelcomeScreen
-import javax.inject.Inject
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.domain.services.LocationBackgroundService
 import com.omar.mentalcompanion.domain.utils.*
+import com.omar.mentalcompanion.presentation.screens.ActiveScreen
+import com.omar.mentalcompanion.presentation.screens.collected_data.CollectedDataScreen
 import com.omar.mentalcompanion.presentation.screens.introduction.IntroductionScreen
+import com.omar.mentalcompanion.presentation.screens.questionnaire.QuestionScreen
+import com.omar.mentalcompanion.presentation.screens.welcome_back.WelcomeScreen
+import com.omar.mentalcompanion.presentation.ui.theme.MentalCompanionTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -95,12 +95,19 @@ class MainActivity : ComponentActivity() {
             SLEEP_QUESTION_CONTENT
         )
 
-        mainViewModel.scheduleReminderNotification(
-            QUESTIONNAIRE_REMINDER_HOUR,
-            QUESTIONNAIRE_REMINDER_MINUTE,
-            NOTIFICATION_TITLE,
-            QUESTIONNAIRE_REMINDER_CONTENT
-        )
+//        mainViewModel.scheduleReminderNotification(
+//            QUESTIONNAIRE_REMINDER_HOUR,
+//            QUESTIONNAIRE_REMINDER_MINUTE,
+//            NOTIFICATION_TITLE,
+//            QUESTIONNAIRE_REMINDER_CONTENT
+//        )
+
+        mainViewModel.scheduleSyncDataWorker(0, 0)
+
+        if (runBlocking { mainViewModel.getIsIntroductionCompleted() }) {
+            startLocationBackgroundService()
+        }
+
     }
 
     private fun startLocationBackgroundService() {

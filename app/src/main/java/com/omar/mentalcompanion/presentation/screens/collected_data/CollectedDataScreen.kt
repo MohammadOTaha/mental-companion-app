@@ -24,57 +24,55 @@ import com.omar.mentalcompanion.presentation.screens.collected_data.viewmodels.A
 fun CollectedDataScreen (
     navController: NavController
 ) {
-    val applicationViewModel = hiltViewModel<AppViewModel>()
-    val appUsageViewModel = hiltViewModel<ApplicationUsageViewModel>()
-    val totalScreenTime = applicationViewModel.totalScreenTime.collectAsState()
-    val usageStatsList = applicationViewModel.appUsageList.collectAsState()
-    val phoneCallsLog = applicationViewModel.phoneCallsLog.collectAsState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Button(onClick = {
-                    applicationViewModel.updateAppUsageList()
-                    applicationViewModel.updateTotalScreenTime()
-                    applicationViewModel.updatePhoneCallsLog()
-
-                    for (usage in usageStatsList.value) {
-                        appUsageViewModel.upsertApplicationUsage(ApplicationUsage(usage.packageName, usage.usageTime))
-                    }
-                }) {
-                    Text(text = "Refresh")
-                }
-
-                Button(onClick = {
-                    navController.navigate(ActiveScreen.QuestionnaireScreen.route) {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    }
-                }) {
-                    Text(text = "Go to Questionnaire")
-                }
-            }
-
-            TableScreen(
-                data = mapOf(
-                    "Total Screen Time" to totalScreenTime.value,
-                    "Usage Stats" to usageStatsList.value,
-                    "Phone Calls Log" to phoneCallsLog.value
-                )
-            )
-        }
-    }
+//    val applicationViewModel = hiltViewModel<AppViewModel>()
+//    val appUsageViewModel = hiltViewModel<ApplicationUsageViewModel>()
+//
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(MaterialTheme.colorScheme.background),
+//        verticalArrangement = Arrangement.spacedBy(16.dp)
+//    ) {
+//        Column(
+//            modifier = Modifier.fillMaxSize()
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceAround
+//            ) {
+//                Button(onClick = {
+//                    applicationViewModel.updateAppUsageList()
+//                    applicationViewModel.updateTotalScreenTime()
+//                    applicationViewModel.updatePhoneCallsLog()
+//
+//                    for (usage in usageStatsList.value) {
+//                        appUsageViewModel.upsertApplicationUsage(ApplicationUsage(usage.packageName, usage.usageTime))
+//                    }
+//                }) {
+//                    Text(text = "Refresh")
+//                }
+//
+//                Button(onClick = {
+//                    navController.navigate(ActiveScreen.QuestionnaireScreen.route) {
+//                        popUpTo(navController.graph.id) {
+//                            inclusive = true
+//                        }
+//                    }
+//                }) {
+//                    Text(text = "Go to Questionnaire")
+//                }
+//            }
+//
+//            TableScreen(
+//                data = mapOf(
+//                    "Total Screen Time" to totalScreenTime.value,
+//                    "Usage Stats" to usageStatsList.value,
+//                    "Phone Calls Log" to phoneCallsLog.value
+//                )
+//            )
+//        }
+//    }
 }
 
 @Composable

@@ -16,32 +16,5 @@ class AppViewModel @Inject constructor(
     private val usageStats: UsageStatsData,
 ) : AndroidViewModel(application) {
 
-    private val _appUsageList = MutableStateFlow(usageStats.getAppUsages())
-    private val _totalScreenTime = MutableStateFlow(usageStats.getTotalScreenTime())
-
-    private val _phoneCallsLog = MutableStateFlow(PhoneCallsLogData(application).getCallLogs())
-
-    val appUsageList: MutableStateFlow<List<AppUsage>>
-        get() = _appUsageList
-
-    val totalScreenTime: MutableStateFlow<String>
-        get() = _totalScreenTime
-
-    val phoneCallsLog: MutableStateFlow<List<PhoneCallsLog>>
-        get() = _phoneCallsLog
-
-
-    fun updateAppUsageList() {
-        _appUsageList.value = usageStats.getAppUsages()
-        _totalScreenTime.value = usageStats.getTotalScreenTime()
-    }
-
-    fun updateTotalScreenTime() {
-        _totalScreenTime.value = usageStats.getTotalScreenTime()
-    }
-
-    fun updatePhoneCallsLog() {
-        _phoneCallsLog.value = PhoneCallsLogData(getApplication()).getCallLogs()
-    }
 
 }

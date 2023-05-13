@@ -13,5 +13,5 @@ interface LocationDao {
     suspend fun insertLocation(location: Location)
 
     @Query("SELECT * FROM locations")
-    fun getAllLocations(): Flow<List<Location>>
+    fun getAllLocations(): List<Location>
 }

@@ -60,8 +60,8 @@ class LocationClient(
         private const val ONE_MINUTE: Long = 60 * 1000
 
         val locationRequest = LocationRequest
-            .Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
-            .setMinUpdateIntervalMillis(1000)
+            .Builder(Priority.PRIORITY_HIGH_ACCURACY, 10 * ONE_MINUTE)
+            .setMinUpdateIntervalMillis(10 * ONE_MINUTE)
             .setMinUpdateDistanceMeters(500f)
             .build()
     }

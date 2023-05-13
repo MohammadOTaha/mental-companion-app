@@ -6,11 +6,12 @@ import androidx.room.Room
 import com.google.firebase.firestore.FirebaseFirestore
 import com.omar.mentalcompanion.AppViewModel
 import com.omar.mentalcompanion.data.data_source.local.RoomDb
-import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.domain.repositories.ApplicationUsageRepository
 import com.omar.mentalcompanion.domain.repositories.LocationRepository
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.domain.services.NotificationSchedulerService
+import com.omar.mentalcompanion.domain.services.SyncSchedulerService
+import com.omar.mentalcompanion.domain.tracked_data.PhoneCallsLogData
 import com.omar.mentalcompanion.domain.tracked_data.UsageStatsData
 import dagger.Module
 import dagger.Provides
@@ -30,7 +31,9 @@ object AppModule {
             app,
             RoomDb::class.java,
             RoomDb.DATABASE_NAME
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+            .build()
     }
 
     @Provides
@@ -69,15 +72,22 @@ object AppModule {
         return AppViewModel(app, usageStatsData)
     }
 
-    @Provides
-    @Singleton
-    fun provideSyncService(applicationUsageRepository: ApplicationUsageRepository): SyncService {
-        return SyncService(applicationUsageRepository)
-    }
 
     @Provides
     @Singleton
     fun provideNotificationSchedulerService(@ApplicationContext context: Context): NotificationSchedulerService {
         return NotificationSchedulerService(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncSchedulerService(@ApplicationContext context: Context): SyncSchedulerService {
+        return SyncSchedulerService(context)
+    }
+
+    @Provides
+    @Singleton
+    fun providePhoneCallsLogData(@ApplicationContext context: Context): PhoneCallsLogData {
+        return PhoneCallsLogData(context)
     }
 }

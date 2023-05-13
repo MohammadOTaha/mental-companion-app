@@ -13,4 +13,7 @@ interface MetaDataDao {
 
     @Query("SELECT value FROM metadata WHERE key = :key")
     suspend fun getMetaData(key: String): String?
+
+    @Query("SELECT * FROM metadata")
+    suspend fun getAllMetaData(): List<MetaData>
 }

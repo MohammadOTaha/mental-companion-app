@@ -7,6 +7,7 @@ import com.omar.mentalcompanion.data.entities.MetaDataKeys
 import com.omar.mentalcompanion.data.entities.MetaDataValues
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.domain.services.NotificationSchedulerService
+import com.omar.mentalcompanion.domain.services.SyncSchedulerService
 import com.omar.mentalcompanion.presentation.screens.ActiveScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val metaDataRepository: MetaDataRepository,
     private val notificationSchedulerService: NotificationSchedulerService,
+    private val syncSchedulerService: SyncSchedulerService
 ) : ViewModel() {
 
     fun initMetaData() {
@@ -29,6 +31,13 @@ class MainViewModel @Inject constructor(
             if (metaDataRepository.getMetaDataValue(MetaDataKeys.LAST_QUESTIONNAIRE_DATE)
                     .isNullOrEmpty()
             ) {
+                metaDataRepository.upsertMetaData(
+                    MetaData(
+                        key = MetaDataKeys.UUID,
+                        value = java.util.UUID.randomUUID().toString()
+                    )
+                )
+
                 metaDataRepository.upsertMetaData(
                     MetaData(
                         key = MetaDataKeys.LAST_QUESTIONNAIRE_DATE,
@@ -104,6 +113,10 @@ class MainViewModel @Inject constructor(
         7 - daysSinceLastQuestionnaire
     }
 
+    suspend fun getIsIntroductionCompleted(): Boolean = withContext(Dispatchers.IO) {
+        metaDataRepository.getMetaDataValue(MetaDataKeys.INTRODUCTION_COMPLETED) == MetaDataValues.TRUE
+    }
+
     fun scheduleReminderNotification(
         hourOfDay: Int,
         minute: Int,
@@ -111,5 +124,12 @@ class MainViewModel @Inject constructor(
         content: String
     ) {
         notificationSchedulerService.scheduleReminderNotification(hourOfDay, minute, title, content)
+    }
+
+    fun scheduleSyncDataWorker(
+        hourOfDay: Int,
+        minute: Int
+    ) {
+        syncSchedulerService.scheduleSyncService(hourOfDay, minute)
     }
 }

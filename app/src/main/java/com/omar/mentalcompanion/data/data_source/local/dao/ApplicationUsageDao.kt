@@ -13,8 +13,8 @@ interface ApplicationUsageDao {
     suspend fun upsertApplicationUsage(applicationUsage: ApplicationUsage)
 
     @Query("SELECT * FROM applications_usage")
-    fun getAllApplicationsUsage(): Flow<List<ApplicationUsage>>
+    fun getAllApplicationsUsage(): List<ApplicationUsage>
 
     @Query("SELECT * FROM applications_usage WHERE created_at >= date('now', 'start of day')")
-    fun getTodayApplicationsUsage(): Flow<List<ApplicationUsage>>
+    fun getTodayApplicationsUsage(): List<ApplicationUsage>
 }

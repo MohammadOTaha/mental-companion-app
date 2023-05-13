@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.omar.mentalcompanion.data.entities.MetaData
 import com.omar.mentalcompanion.data.entities.MetaDataKeys
+import com.omar.mentalcompanion.data.services.SyncService
 import com.omar.mentalcompanion.domain.repositories.MetaDataRepository
 import com.omar.mentalcompanion.presentation.screens.questionnaire.events.QuestionnaireEvent
 import com.omar.mentalcompanion.presentation.screens.questionnaire.states.QuestionnaireState
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionnaireViewModel @Inject constructor(
-    private val metaDataRepository: MetaDataRepository
+    private val metaDataRepository: MetaDataRepository,
+    private val syncService: SyncService
 ): ViewModel() {
     private val _state = mutableStateOf(QuestionnaireState())
     private val state: State<QuestionnaireState> = _state
@@ -75,6 +77,8 @@ class QuestionnaireViewModel @Inject constructor(
                             value = LocalDate.now().toString()
                         )
                     )
+
+                    syncService.execute(isFromWorker = false)
                 }
             }
         }

@@ -21,7 +21,7 @@ class LocationViewModel @Inject constructor(
         }
     }
 
-    fun getAllLocations(): Flow<List<Location>> {
+    fun getAllLocations(): List<Location> {
         return repository.getAllLocations()
     }
 }

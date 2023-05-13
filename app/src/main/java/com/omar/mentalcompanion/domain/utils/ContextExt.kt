@@ -15,3 +15,10 @@ fun Context.hasLocationPermission(): Boolean {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
 }
+
+fun Context.hasPhoneCallsLogPermission(): Boolean {
+    return ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.READ_CALL_LOG
+    ) == PackageManager.PERMISSION_GRANTED
+}

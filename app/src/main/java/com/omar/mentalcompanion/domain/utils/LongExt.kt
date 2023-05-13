@@ -7,3 +7,8 @@ fun Long.toFormattedTimeString(): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
     return dateFormat.format(this)
 }
+
+fun Long.toFormattedDateString(): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return dateFormat.format(this)
+}

@@ -17,51 +17,23 @@ class UsageStatsData(context: Context) {
         }
     }
 
-    fun getTotalScreenTime(): String {
-        val time = System.currentTimeMillis()
-        val stats = usageStatsManager.queryUsageStats(
-            UsageStatsManager.INTERVAL_DAILY,
-            time - ONE_DAY_MILLIS,
-            time
-        )
+    fun getTodayScreenTime(): Long {
+        val endTime = System.currentTimeMillis()
+        val startTime = endTime - ONE_DAY_MILLIS
 
-        var totalScreenTime: Long = 0
-        for (stat in stats) {
-            if (stat.totalTimeInForeground > 0) {
-                totalScreenTime += stat.totalTimeInForeground / 1000
-            }
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            usageStatsManager.queryAndAggregateUsageStats(startTime, endTime)
+                .values
+                .sumOf { it.totalTimeInForeground.toInt() / 1000 }
+                .toLong()
+        } else {
+            usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime)
+                .sumOf { it.totalTimeInForeground.toInt() / 1000 }
+                .toLong()
         }
-
-        return totalScreenTime.toFormattedTime()
-    }
-
-    fun getAppUsages(): List<AppUsage> {
-        val time = System.currentTimeMillis()
-        val stats = usageStatsManager.queryUsageStats(
-            UsageStatsManager.INTERVAL_DAILY,
-            time - ONE_DAY_MILLIS,
-            time
-        )
-
-        val appUsages = mutableListOf<AppUsage>()
-        for (stat in stats) {
-            if (stat.totalTimeInForeground > 0) {
-                appUsages.add(AppUsage(stat.packageName, stat.totalTimeInForeground / 1000))
-            }
-        }
-
-        return appUsages.sorted()
     }
 
     companion object {
         private const val ONE_DAY_MILLIS = 1000 * 60 * 60 * 24
-
-        private fun Long.toFormattedTime(): String {
-            val hours = this / 3600
-            val minutes = (this % 3600) / 60
-            val seconds = this % 60
-
-            return "$hours hours, $minutes minutes, $seconds seconds"
-        }
     }
 }

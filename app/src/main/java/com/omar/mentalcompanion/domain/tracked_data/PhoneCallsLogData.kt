@@ -4,17 +4,23 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.CallLog
 import com.omar.mentalcompanion.data.dto.PhoneCallsLog
+import com.omar.mentalcompanion.domain.utils.hasPhoneCallsLogPermission
+import com.omar.mentalcompanion.domain.utils.toFormattedTimeString
 
 class PhoneCallsLogData(private val context: Context) {
     private val callLogs = mutableListOf<PhoneCallsLog>()
 
     @SuppressLint("Range")
     fun getCallLogs(): List<PhoneCallsLog> {
+        if (!context.hasPhoneCallsLogPermission()) {
+            return callLogs
+        }
+
         val cursor = context.contentResolver.query(
             CallLog.Calls.CONTENT_URI,
             null,
-            null,
-            null,
+            CallLog.Calls.DATE + " >= ?",
+            arrayOf((System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 14).toString()),
             CallLog.Calls.DATE + " DESC"
         )
 
@@ -31,7 +37,7 @@ class PhoneCallsLogData(private val context: Context) {
                     else -> "UNKNOWN"
                 }
 
-                val callLog = PhoneCallsLog(callType, date, duration)
+                val callLog = PhoneCallsLog(callType, date.toLong().toFormattedTimeString(), duration)
                 callLogs.add(callLog)
             }
             cursor.close()

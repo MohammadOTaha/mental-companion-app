@@ -13,6 +13,7 @@ data class MetaData (
 )
 
 object MetaDataKeys {
+    const val UUID = "uuid"
     const val LAST_QUESTIONNAIRE_DATE = "last_questionnaire_date"
     const val LAST_QUESTIONNAIRE_SCORE = "last_questionnaire_score"
     const val INTRODUCTION_COMPLETED = "introduction_completed"

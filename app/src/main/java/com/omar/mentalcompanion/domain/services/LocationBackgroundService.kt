@@ -55,7 +55,7 @@ class LocationBackgroundService: Service() {
     private fun start() {
         val notificationBuilder = NotificationService.getNotificationBuilder(this)
             .setContentTitle("Application Running")
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setOngoing(true)
 
         val notificationManager = NotificationService.getNotificationManager(this)
